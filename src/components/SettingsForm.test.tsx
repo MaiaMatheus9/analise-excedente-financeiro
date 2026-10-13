@@ -1,0 +1,31 @@
+// @vitest-environment jsdom
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { expect, it, vi } from "vitest";
+import { SettingsForm } from "./SettingsForm";
+it("propaga alteração de taxa sem enviar um formulário e bloqueia valores inválidos", async () => {
+  const onChange = vi.fn();
+  render(
+    <SettingsForm
+      value={{
+        capital: 30000,
+        rates: [100, 110, 120, 105],
+        reference: 1,
+        method: "historical",
+      }}
+      onChange={onChange}
+    />,
+  );
+  fireEvent.change(screen.getByLabelText("CDB B percentual do CDI"), {
+    target: { value: "115" },
+  });
+  await waitFor(() => expect(onChange).toHaveBeenCalled());
+  expect(onChange.mock.calls.at(-1)![0].rates[1]).toBe(115);
+  onChange.mockClear();
+  fireEvent.change(screen.getByLabelText("CDB B percentual do CDI"), {
+    target: { value: "999" },
+  });
+  await waitFor(() =>
+    expect(screen.getByText("Máximo de 500% do CDI.")).toBeTruthy(),
+  );
+  expect(onChange).not.toHaveBeenCalled();
+});

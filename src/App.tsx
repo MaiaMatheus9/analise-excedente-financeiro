@@ -1,0 +1,573 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowLeftRight,
+  ArrowUpRight,
+  CalendarDays,
+  ChartNoAxesCombined,
+  ChevronRight,
+  CircleHelp,
+  Info,
+  Landmark,
+  LayoutDashboard,
+  Menu,
+  RefreshCw,
+  SlidersHorizontal,
+  TrendingUp,
+  X,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { useData } from "./hooks/useData";
+import {
+  analyze,
+  dateLabel,
+  monthsAgo,
+  rank,
+  shiftDays,
+  today,
+} from "./lib/finance";
+import Compare from "./pages/Compare";
+import Dashboard from "./pages/Dashboard";
+import Fixed from "./pages/Fixed";
+import History from "./pages/History";
+import Market from "./pages/Market";
+import SettingsPage from "./pages/Settings";
+import type { ComparisonRow, Settings } from "./types";
+const tabs: {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  description: string;
+}[] = [
+  {
+    id: "dashboard",
+    name: "Visão geral",
+    icon: LayoutDashboard,
+    description: "Uma visão clara das possibilidades para o seu excedente.",
+  },
+  {
+    id: "compare",
+    name: "Comparador",
+    icon: ArrowLeftRight,
+    description: "O mesmo capital. O mesmo período. Diferentes possibilidades.",
+  },
+  {
+    id: "fixed",
+    name: "Renda fixa",
+    icon: Landmark,
+    description: "Explore o efeito das taxas dos CDBs e RDB sobre seu capital.",
+  },
+  {
+    id: "market",
+    name: "Renda variável",
+    icon: TrendingUp,
+    description: "Acompanhe ações, ETFs e fundos imobiliários da B3.",
+  },
+  {
+    id: "history",
+    name: "Histórico",
+    icon: ChartNoAxesCombined,
+    description: "Veja como o desempenho se desenvolveu ao longo do período.",
+  },
+  {
+    id: "settings",
+    name: "Configurações",
+    icon: SlidersHorizontal,
+    description:
+      "Ajuste as condições para uma comparação que faça sentido para você.",
+  },
+];
+const defaultSettings: Settings = {
+  capital: 30000,
+  rates: [100, 110, 120, 105],
+  reference: 1,
+  method: "historical",
+};
+export default function App() {
+  const [tab, setTab] = useState("dashboard"),
+    [mobile, setMobile] = useState(false),
+    [settings, setSettings] = useState(defaultSettings),
+    [period, setPeriod] = useState("1m"),
+    [end, setEnd] = useState(today()),
+    [start, setStart] = useState(monthsAgo(today(), 1)),
+    [draftStart, setDraftStart] = useState(start),
+    [draftEnd, setDraftEnd] = useState(end),
+    [dateError, setDateError] = useState(""),
+    [refresh, setRefresh] = useState(0),
+    [category, setCategory] = useState("Todas"),
+    [sort, setSort] = useState("desc"),
+    [selected, setSelected] = useState(["PETR4", "ITUB4"]),
+    [help, setHelp] = useState(false);
+  const { data, loading, error } = useData(start, end, refresh);
+  const analysis = useMemo(
+    () => analyze(data, settings, start, end),
+    [data, settings, start, end],
+  );
+  const { fixed, market, reference } = analysis;
+  const current = tabs.find((t) => t.id === tab)!;
+  const validMarket = market.filter(
+      (r) => r.rate !== null && r.category !== "Índice",
+    ),
+    best = rank(market, 4),
+    worst = rank(market, 3, true),
+    benchmark = market.find((r) => r.category === "Índice");
+  const all = [...fixed, ...market.filter((r) => r.category !== "Índice")];
+  const filtered = (rows: ComparisonRow[]) =>
+    rows
+      .filter((r) => category === "Todas" || r.category === category)
+      .sort((a, b) =>
+        a.rate === null
+          ? 1
+          : b.rate === null
+            ? -1
+            : (sort === "desc" ? -1 : 1) * (a.rate - b.rate),
+      );
+  function preset(key: string) {
+    setPeriod(key);
+    if (key === "custom") return;
+    const to = today(),
+      from = key.endsWith("m")
+        ? monthsAgo(to, Number(key.slice(0, -1)))
+        : shiftDays(to, -Number(key));
+    setStart(from);
+    setEnd(to);
+    setDraftStart(from);
+    setDraftEnd(to);
+    setDateError("");
+  }
+  function applyDates() {
+    if (
+      !draftStart ||
+      !draftEnd ||
+      draftStart >= draftEnd ||
+      draftEnd > today() ||
+      (Date.parse(draftEnd) - Date.parse(draftStart)) / 86400000 > 730
+    ) {
+      setDateError(
+        "Escolha datas em ordem, até hoje, em um intervalo de até dois anos.",
+      );
+      return;
+    }
+    setStart(draftStart);
+    setEnd(draftEnd);
+    setDateError("");
+  }
+  const navigate = (id: string) => {
+    setTab(id);
+    setMobile(false);
+    setCategory("Todas");
+  };
+  const topCount = best.filter(
+    (r) => reference.rate !== null && r.rate! > reference.rate,
+  ).length;
+  const filterBar = (
+    <div className="table-toolbar">
+      <div className="segmented" aria-label="Filtrar por categoria">
+        {[
+          "Todas",
+          ...(tab === "compare" ? ["Renda fixa"] : []),
+          "Ação",
+          "ETF",
+          "FII",
+        ].map((c) => (
+          <button
+            key={c}
+            className={category === c ? "active" : ""}
+            onClick={() => setCategory(c)}
+          >
+            {c === "Ação"
+              ? "Ações"
+              : c === "ETF"
+                ? "ETFs"
+                : c === "FII"
+                  ? "FIIs"
+                  : c}
+          </button>
+        ))}
+      </div>
+      <label className="sort-label">
+        Ordenar{" "}
+        <select value={sort} onChange={(e) => setSort(e.target.value)}>
+          <option value="desc">Maior retorno</option>
+          <option value="asc">Menor retorno</option>
+        </select>
+      </label>
+    </div>
+  );
+  const pageProps = {
+    settings,
+    setSettings,
+    analysis,
+    reference,
+    data,
+    best,
+    validMarket,
+    topCount,
+    worst,
+    filtered,
+    navigate,
+    benchmark,
+    filterBar,
+    all,
+    fixed,
+    market,
+    selected,
+    setSelected,
+  };
+  return (
+    <div className="app">
+      <aside className={`sidebar ${mobile ? "open" : ""}`}>
+        <a
+          className="brand"
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("dashboard");
+          }}
+        >
+          <span className="brand-icon">
+            <ChartNoAxesCombined size={25} />
+          </span>
+          <span>
+            Hub Financeiro<small>INTELIGÊNCIA PARA EMPREENDER</small>
+          </span>
+        </a>
+        <div className="workspace-label">SUAS FERRAMENTAS</div>
+        <div className="tool-label">
+          <span>10</span>
+          <div>
+            Excedente financeiro<small>Análise e comparação</small>
+          </div>
+        </div>
+        <nav aria-label="Seções da ferramenta">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => navigate(t.id)}
+              className={tab === t.id ? "active" : ""}
+              aria-current={tab === t.id ? "page" : undefined}
+            >
+              <t.icon size={19} />
+              {t.name}
+              {tab === t.id && <ChevronRight size={15} />}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <div className="learning-card">
+            <div className="circle-icon">
+              <CircleHelp size={21} />
+            </div>
+            <strong>Decisões com mais contexto</strong>
+            <p>Entenda os números antes de escolher onde investir.</p>
+            <button onClick={() => setHelp(true)}>
+              Como utilizar <ArrowUpRight size={15} />
+            </button>
+          </div>
+          <div className="university">
+            <span className="university-mark">U</span>
+            <div>
+              UNICAMP<small>Projeto acadêmico de extensão</small>
+            </div>
+          </div>
+        </div>
+      </aside>
+      {mobile && (
+        <button
+          className="scrim"
+          aria-label="Fechar navegação"
+          onClick={() => setMobile(false)}
+        />
+      )}
+      <div className="main-shell">
+        <header className="topbar">
+          <div>
+            <button
+              className="mobile-menu icon-button"
+              aria-label="Abrir navegação"
+              onClick={() => setMobile(true)}
+            >
+              <Menu size={21} />
+            </button>
+            <span className="breadcrumb">
+              Ferramentas <ChevronRight size={13} />{" "}
+              <b>Análise de excedente financeiro</b>
+            </span>
+          </div>
+          <span className="project-badge">
+            <span /> PROJETO DE EXTENSÃO
+          </span>
+        </header>
+        <main>
+          <div className="page-heading">
+            <div>
+              <div className="eyebrow">
+                FERRAMENTA 10 <span>/</span> INTELIGÊNCIA FINANCEIRA
+              </div>
+              <h1>{current.name}</h1>
+              <p>{current.description}</p>
+            </div>
+            <button
+              className="button secondary"
+              disabled={loading}
+              onClick={() => setRefresh((x) => x + 1)}
+            >
+              <RefreshCw size={16} className={loading ? "spin" : ""} />
+              {loading ? "Consultando…" : "Atualizar dados"}
+            </button>
+          </div>
+          {tab === "dashboard" && (
+            <section className="intro-banner">
+              <div>
+                <span className="eyebrow">SEU DINHEIRO, EM PERSPECTIVA</span>
+                <h2>
+                  O que seu excedente
+                  <br />
+                  poderia ter rendido?
+                </h2>
+                <p>
+                  Compare alternativas e transforme dados
+                  <br className="desktop-only" /> em decisões mais informadas
+                  para o seu negócio.
+                </p>
+              </div>
+              <div className="banner-art" aria-hidden="true">
+                <span className="art-orbit one" />
+                <span className="art-orbit two" />
+                <div className="art-card">
+                  <span className="art-mini-line" />
+                  <span className="art-mini-line short" />
+                  <div className="art-bars">
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                  </div>
+                </div>
+                <div className="art-coin">
+                  <TrendingUp size={28} />
+                </div>
+              </div>
+              <span className="banner-caption">Compare. Entenda. Planeje.</span>
+            </section>
+          )}
+          <section className="filters" aria-label="Filtros da análise">
+            <div className="filter-title">
+              <SlidersHorizontal size={17} />
+              <strong>Seu cenário</strong>
+            </div>
+            <label className="capital-label">
+              Capital excedente
+              <div className="money-input">
+                <span>R$</span>
+                <input
+                  aria-label="Capital excedente"
+                  type="number"
+                  min="1"
+                  max="10000000000"
+                  value={settings.capital}
+                  onChange={(e) => {
+                    const n = Number(e.target.value);
+                    if (n >= 1 && n <= 1e10)
+                      setSettings((s) => ({ ...s, capital: n }));
+                  }}
+                />
+              </div>
+            </label>
+            <div className="period-filter">
+              <span className="field-label">Período de análise</span>
+              <div className="period-buttons">
+                {[
+                  ["7", "7 dias"],
+                  ["15", "15 dias"],
+                  ["1m", "1 mês"],
+                  ["3m", "3 meses"],
+                  ["6m", "6 meses"],
+                  ["12m", "12 meses"],
+                  ["custom", "Personalizado"],
+                ].map(([key, label]) => (
+                  <button
+                    key={key}
+                    className={period === key ? "active" : ""}
+                    aria-pressed={period === key}
+                    onClick={() => preset(key)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label className="ref-filter">
+              Comparar com
+              <select
+                value={settings.reference}
+                onChange={(e) =>
+                  setSettings((s) => ({
+                    ...s,
+                    reference: Number(e.target.value),
+                  }))
+                }
+              >
+                {settings.rates.slice(0, 3).map((p, i) => (
+                  <option key={i} value={i}>
+                    CDB {["A", "B", "C"][i]} · {p}% CDI
+                  </option>
+                ))}
+              </select>
+            </label>
+            {period === "custom" && (
+              <div className="custom-dates">
+                <label>
+                  Data inicial
+                  <input
+                    type="date"
+                    value={draftStart}
+                    max={today()}
+                    onChange={(e) => setDraftStart(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Data final
+                  <input
+                    type="date"
+                    value={draftEnd}
+                    max={today()}
+                    onChange={(e) => setDraftEnd(e.target.value)}
+                  />
+                </label>
+                <button className="button" onClick={applyDates}>
+                  Aplicar período
+                </button>
+                {dateError && (
+                  <span role="alert" className="negative">
+                    {dateError}
+                  </span>
+                )}
+              </div>
+            )}
+          </section>
+          <div className="data-status" aria-live="polite">
+            <span>
+              <span
+                className={`status-dot ${loading ? "pending" : data ? "" : "failed"}`}
+              />
+              {loading
+                ? "Buscando dados nas fontes…"
+                : error
+                  ? "Consulta não concluída"
+                  : `Dados consultados às ${new Date(data?.fetchedAt ?? Date.now()).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`}
+            </span>
+            <span>
+              {dateLabel(start)} — {dateLabel(end)} · BCB / brapi
+            </span>
+          </div>
+          {error && (
+            <div className="notice error" role="alert">
+              <Info size={18} />
+              <span>{error}</span>
+            </div>
+          )}
+          {data && !data.tokenConfigured && (
+            <div className="notice">
+              <Info size={18} />
+              <span>
+                <b>Acesso inicial ao mercado.</b> PETR4, ITUB4 e VALE3 são
+                consultados sem chave. Os demais ativos precisam de uma chave
+                brapi com histórico habilitado.{" "}
+                <button
+                  className="text-button"
+                  onClick={() => navigate("settings")}
+                >
+                  Ver integração <ArrowUpRight size={13} />
+                </button>
+              </span>
+            </div>
+          )}
+          {data?.cdi.error && (
+            <div className="notice error">
+              <Info size={18} />
+              <span>Banco Central: {data.cdi.error}</span>
+            </div>
+          )}
+          {data && (
+            <p className="analysis-scope">
+              <CalendarDays size={14} /> Intervalo efetivo:{" "}
+              <b>
+                {dateLabel(analysis.start)} a {dateLabel(analysis.end)}
+              </b>{" "}
+              ·{" "}
+              {settings.method === "historical"
+                ? "CDI histórico"
+                : "Estimativa com CDI atual"}{" "}
+              · Preços ajustados quando disponíveis. O dia em curso é excluído.
+            </p>
+          )}
+          {tab === "dashboard" && <Dashboard {...pageProps} />}
+          {tab === "compare" && <Compare {...pageProps} />}
+          {tab === "fixed" && <Fixed {...pageProps} />}
+          {tab === "market" && <Market {...pageProps} />}
+          {tab === "history" && <History {...pageProps} />}
+          {tab === "settings" && <SettingsPage {...pageProps} />}
+          <footer>
+            <div>
+              <Info size={17} />
+              <p>
+                Ferramenta educacional. Valores brutos, antes de tributos e
+                custos. Avalie risco, liquidez, prazo e condições de garantia de
+                cada produto. Rentabilidade passada não garante resultados
+                futuros. Não constitui recomendação individual de investimento.
+              </p>
+            </div>
+            <span>
+              Hub de Inteligência Financeira para Empreendedores · Unicamp
+            </span>
+          </footer>
+        </main>
+      </div>
+      {help && (
+        <div className="modal-backdrop" onClick={() => setHelp(false)}>
+          <section
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="help-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              autoFocus
+              className="icon-button modal-close"
+              aria-label="Fechar ajuda"
+              onClick={() => setHelp(false)}
+            >
+              <X />
+            </button>
+            <span className="eyebrow">COMECE POR AQUI</span>
+            <h2 id="help-title">Do excedente à comparação</h2>
+            <ol>
+              <li>Informe o capital disponível para análise.</li>
+              <li>Escolha o período que deseja consultar.</li>
+              <li>
+                Na aba Renda fixa, preencha os percentuais das ofertas
+                bancárias.
+              </li>
+              <li>Escolha um CDB como referência e compare os retornos.</li>
+              <li>
+                Explore o Dashboard e o Histórico, observando as fontes e as
+                datas.
+              </li>
+            </ol>
+            <button
+              className="button"
+              onClick={() => {
+                setHelp(false);
+                navigate("fixed");
+              }}
+            >
+              Ajustar minhas taxas <ArrowUpRight size={16} />
+            </button>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
