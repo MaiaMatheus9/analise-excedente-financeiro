@@ -27,7 +27,6 @@ export interface DataResponse {
   tokenConfigured: boolean;
 }
 export interface Settings {
-  capital: number;
   rates: number[];
   reference: number;
   method: "historical" | "estimate";

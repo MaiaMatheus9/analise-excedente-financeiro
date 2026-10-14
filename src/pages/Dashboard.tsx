@@ -9,6 +9,7 @@ import { ReturnChart } from "../components/Charts";
 import { ComparisonTable } from "../components/ComparisonTable";
 import { Benchmark, Kpi, PanelTitle } from "../components/Ui";
 import { dateLabel, money, percent } from "../lib/finance";
+import { useCapitalAnalisado } from "../contexts/CapitalContext";
 import type { PageProps } from "./types";
 
 export default function Dashboard({
@@ -24,13 +25,15 @@ export default function Dashboard({
   navigate,
   benchmark,
 }: PageProps) {
+  const { capitalAnalisado } = useCapitalAnalisado();
+
   return (
     <>
       <div className="kpi-grid">
         <Kpi
           icon={Wallet}
           label="CAPITAL ANALISADO"
-          value={money(settings.capital)}
+          value={money(capitalAnalisado)}
           detail="Mesmo valor em todas as alternativas"
         />
         <Kpi
@@ -93,7 +96,7 @@ export default function Dashboard({
             referenceId={reference.id}
           />
           <div className="chart-legend">
-            <span>Capital inicial: {money(settings.capital)}</span>
+            <span>Capital inicial: {money(capitalAnalisado)}</span>
           </div>
         </section>
       </div>

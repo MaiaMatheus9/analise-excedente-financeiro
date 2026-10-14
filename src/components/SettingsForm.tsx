@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useCapitalAnalisado } from "../contexts/CapitalContext";
 import type { Settings } from "../types";
-export const settingsSchema = z.object({
+const settingsFormSchema = z.object({
   capital: z.coerce
     .number()
     .min(1, "Informe pelo menos R$ 1.")
@@ -18,6 +19,8 @@ export const settingsSchema = z.object({
   reference: z.coerce.number().int().min(0).max(2),
   method: z.enum(["historical", "estimate"]),
 });
+export const settingsSchema = settingsFormSchema.omit({ capital: true });
+type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 export function SettingsForm({
   value,
   onChange,
@@ -25,20 +28,25 @@ export function SettingsForm({
   value: Settings;
   onChange: (s: Settings) => void;
 }) {
+  const { capitalAnalisado, setCapitalAnalisado } = useCapitalAnalisado();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Settings>({
-    resolver: zodResolver(settingsSchema),
-    values: value,
+  } = useForm<SettingsFormValues>({
+    resolver: zodResolver(settingsFormSchema),
+    values: { ...value, capital: capitalAnalisado },
     mode: "onChange",
   });
+  function submit({ capital, ...settings }: SettingsFormValues) {
+    setCapitalAnalisado(capital);
+    onChange(settings);
+  }
   return (
     <form
-      onSubmit={handleSubmit(onChange)}
+      onSubmit={handleSubmit(submit)}
       onChange={() => {
-        void handleSubmit(onChange)();
+        void handleSubmit(submit)();
       }}
       className="settings-form"
     >

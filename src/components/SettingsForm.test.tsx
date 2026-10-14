@@ -1,19 +1,21 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
+import { CapitalProvider } from "../contexts/CapitalContext";
 import { SettingsForm } from "./SettingsForm";
 it("propaga alteração de taxa sem enviar um formulário e bloqueia valores inválidos", async () => {
   const onChange = vi.fn();
   render(
-    <SettingsForm
-      value={{
-        capital: 30000,
-        rates: [100, 110, 120, 105],
-        reference: 1,
-        method: "historical",
-      }}
-      onChange={onChange}
-    />,
+    <CapitalProvider>
+      <SettingsForm
+        value={{
+          rates: [100, 110, 120, 105],
+          reference: 1,
+          method: "historical",
+        }}
+        onChange={onChange}
+      />
+    </CapitalProvider>,
   );
   fireEvent.change(screen.getByLabelText("CDB B percentual do CDI"), {
     target: { value: "115" },

@@ -130,6 +130,7 @@ export function rank(rows: ComparisonRow[], count: number, ascending = false) {
 export function analyze(
   data: DataResponse | undefined,
   settings: Settings,
+  capital: number,
   start: string,
   end: string,
 ) {
@@ -193,7 +194,7 @@ export function analyze(
       name: `${["CDB A", "CDB B", "CDB C", "RDB"][i]} · ${p}% CDI`,
       category: "Renda fixa",
       rate,
-      final: rate === null ? null : settings.capital * (1 + rate),
+      final: rate === null ? null : capital * (1 + rate),
       difference: rate === null || ref === null ? null : rate - ref,
       start: effectiveStart,
       end: effectiveEnd,
@@ -222,7 +223,7 @@ export function analyze(
       name: a.symbol,
       category: a.category,
       rate,
-      final: rate === null ? null : settings.capital * (1 + rate),
+      final: rate === null ? null : capital * (1 + rate),
       difference: rate === null || ref === null ? null : rate - ref,
       start: effectiveStart,
       end: effectiveEnd,
