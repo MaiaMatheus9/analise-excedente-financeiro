@@ -1,6 +1,6 @@
 # Ferramenta 10 — Análise de Excedente Financeiro
 
-Aplicação educacional do Hub de Inteligência Financeira para Empreendedores. Primeira versão local em React + TypeScript + Vite, com Recharts, React Hook Form e Zod. Interface em Arial, com entradas verdes, resultados azuis e informações complementares em cinza. CSS responsivo próprio, sem necessidade de Tailwind nesta versão.
+Aplicação educacional do Hub de Inteligência Financeira para Empreendedores. Primeira versão local em React + TypeScript + Vite, com Recharts, React Hook Form e Zod. 
 
 ## Executar no VS Code
 
@@ -70,20 +70,11 @@ Os testes ficam junto dos módulos: `finance.test.ts`, `api.test.ts` e `Settings
 - Autenticação e ativos de teste: https://brapi.dev/docs
 - Limitações de GOOGLEFINANCE: https://support.google.com/docs/answer/3093281?hl=pt-BR
 
-## Cloudflare Pages — quando for publicar
-
-Nenhuma publicação foi realizada. O código já contém `functions/api/data.ts`.
-
-1. Crie um repositório com o código (sem `.env.local`, `node_modules` ou arquivos privados) e conecte-o ao Cloudflare Pages.
-2. Configure o comando de build `npm run build`, diretório de saída `dist` e Node.js 22.
-3. Cadastre `BRAPI_API_KEY` como segredo/variável no ambiente de produção e de preview do Pages.
-4. Confirme a inclusão do diretório `functions` na raiz e faça o deploy por integração Git ou pelo Wrangler. Upload estático apenas de `dist` não inclui a API.
-5. Valide `/api/data?start=2026-09-13&end=2026-10-09` (ajuste as datas), os gráficos, limites do provedor e as mensagens de erro.
-
 Documentação oficial: https://developers.cloudflare.com/pages/functions/ e https://developers.cloudflare.com/pages/framework-guides/deploy-a-vite3-project/
 
 ## Limitações e próximos incrementos
 
+- Limitação do plano da BRAPI (Alguns ativos não mostram o histórico em longos períodos).
 - Dados de ETFs, FIIs, WEG e Ibovespa dependem de chave/cobertura; longos históricos podem depender do plano.
 - Cache em memória por processo/isolate, não distribuído. Antes de aumentar o público, considerar cache compartilhado e controle de abuso da API pública.
 - Calendário com fins de semana e feriados nacionais/móveis; não é um calendário oficial completo da B3. Ausências no CDI histórico bloqueiam a renda fixa quando o calendário espera observação.
@@ -93,4 +84,3 @@ Documentação oficial: https://developers.cloudflare.com/pages/functions/ e htt
 - Sem autenticação, banco de dados ou persistência das configurações. Recarregar a página restaura o cenário inicial.
 - Cada consulta fica restrita a dois anos. Não há atualização em tempo real nem execução de investimentos.
 
-Próximos passos: habilitar a chave, validar cobertura completa, revisar a metodologia com o responsável acadêmico e, quando autorizado, publicar.
