@@ -10,12 +10,14 @@ import {
   Landmark,
   LayoutDashboard,
   Menu,
+  Moon,
   RefreshCw,
   SlidersHorizontal,
+  Sun,
   TrendingUp,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useData } from "./hooks/useData";
 import { useCapitalAnalisado } from "./contexts/CapitalContext";
 import {
@@ -96,7 +98,27 @@ export default function App() {
     [category, setCategory] = useState("Todas"),
     [sort, setSort] = useState("desc"),
     [selected, setSelected] = useState(["PETR4", "ITUB4"]),
-    [help, setHelp] = useState(false);
+    [help, setHelp] = useState(false),
+    [theme, setTheme] = useState<"light" | "dark">(() => {
+      try {
+        return localStorage.getItem("analise-excedente-theme") === "dark"
+          ? "dark"
+          : "light";
+      } catch {
+        return "light";
+      }
+    });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#13241f" : "#173e35");
+    try {
+      localStorage.setItem("analise-excedente-theme", theme);
+    } catch {
+      // The selected theme still applies for this session when storage is unavailable.
+    }
+  }, [theme]);
   const { capitalAnalisado, setCapitalAnalisado } = useCapitalAnalisado();
   const { data, loading, error } = useData(start, end, refresh);
   const analysis = useMemo(
@@ -295,9 +317,25 @@ export default function App() {
               <b>Análise de excedente financeiro</b>
             </span>
           </div>
-          <span className="project-badge">
-            <span /> PROJETO DE EXTENSÃO
-          </span>
+          <div className="topbar-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              aria-label="Alternar tema claro e escuro"
+              aria-pressed={theme === "dark"}
+              onClick={() =>
+                setTheme((currentTheme) =>
+                  currentTheme === "dark" ? "light" : "dark",
+                )
+              }
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              <span>{theme === "dark" ? "Claro" : "Escuro"}</span>
+            </button>
+            <span className="project-badge">
+              <span /> PROJETO DE EXTENSÃO
+            </span>
+          </div>
         </header>
         <main>
           <div className="page-heading">
