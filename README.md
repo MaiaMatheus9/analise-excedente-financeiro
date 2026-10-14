@@ -79,8 +79,6 @@ Documentação oficial: https://developers.cloudflare.com/pages/functions/ e htt
 - Cache em memória por processo/isolate, não distribuído. Antes de aumentar o público, considerar cache compartilhado e controle de abuso da API pública.
 - Calendário com fins de semana e feriados nacionais/móveis; não é um calendário oficial completo da B3. Ausências no CDI histórico bloqueiam a renda fixa quando o calendário espera observação.
 - Retornos brutos; sem IR, IOF, taxas, spreads, custos de negociação ou modelagem individual de garantias e liquidez.
-- Ajustes de preços seguem o provedor; não presumir equivalência exata com fluxo de dividendos recebido/reinvestido por um investidor.
 - O capital hipotético usa frações ideais, sem restrição de lotes. Ofertas bancárias são parâmetros do usuário, não cotações de produtos bancários.
 - Sem autenticação, banco de dados ou persistência das configurações. Recarregar a página restaura o cenário inicial.
-- Cada consulta fica restrita a dois anos. Não há atualização em tempo real nem execução de investimentos.
 
