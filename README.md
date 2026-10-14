@@ -21,14 +21,6 @@ npm run build
 
 `npm run preview` serve somente o frontend compilado, sem a API. Para testar o fluxo completo, use `npm run dev` ou o emulador do Cloudflare Pages.
 
-## Configurar dados de mercado
-
-1. Obtenha uma chave em https://brapi.dev/dashboard, verificando cobertura e limites do seu plano.
-2. Copie `.env.example` para `.env.local`.
-3. Preencha `BRAPI_API_KEY` e reinicie `npm run dev`.
-
-Nunca use `VITE_BRAPI_API_KEY`: variáveis com prefixo VITE podem ir para o navegador. Não envie sua chave para o Git. Sem chave, a aplicação consulta os ativos de teste PETR4, ITUB4 e VALE3; os demais aparecem indisponíveis. Uma chave não garante cobertura de todos os intervalos: isso depende do plano. Nenhum serviço pago é contratado automaticamente.
-
 ## O que está implementado
 
 - Seis abas: Visão geral, Comparador, Renda fixa, Renda variável, Histórico e Configurações.
