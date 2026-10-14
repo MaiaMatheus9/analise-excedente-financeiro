@@ -63,31 +63,36 @@ export function ReturnChart({
           <CartesianGrid
             strokeDasharray="3 5"
             vertical={false}
-            stroke="#e5eae7"
+            stroke="var(--chart-grid)"
           />
           <XAxis
             dataKey="name"
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "#66746d", fontSize: 12 }}
+            tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
           />
           <YAxis
             width={metric === "final" ? 72 : 52}
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "#66746d", fontSize: 11 }}
+            tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
             tickFormatter={(v) =>
               metric === "rate" ? `${Number(v).toLocaleString('pt-BR')}%` : `${Math.round(v / 1000).toLocaleString('pt-BR')} mil`
             }
           />
           <Tooltip
-            cursor={{ fill: "#f2f5f2" }}
+            cursor={{ fill: "var(--chart-cursor)" }}
             formatter={(v) =>
               metric === "rate" ? percent(Number(v) / 100) : money(Number(v))
             }
-            contentStyle={{ borderRadius: 12, border: "1px solid #e3e8e4" }}
+            contentStyle={{
+              borderRadius: 12,
+              border: "1px solid var(--chart-grid)",
+              background: "var(--chart-tooltip-bg)",
+              color: "var(--chart-axis)",
+            }}
           />
-          <ReferenceLine y={0} stroke="#ccd5ce" />
+          <ReferenceLine y={0} stroke="var(--chart-grid)" />
           <Bar
             dataKey="value"
             name={metric === "rate" ? "Retorno" : "Valor final"}
@@ -100,10 +105,10 @@ export function ReturnChart({
                 key={d.id}
                 fill={
                   d.id === referenceId
-                    ? "#9fc5e8"
+                    ? "var(--chart-reference)"
                     : d.value < 0
-                      ? "#c37d70"
-                      : "#477d68"
+                      ? "var(--chart-negative)"
+                      : "var(--chart-positive)"
                 }
               />
             ))}
@@ -145,7 +150,7 @@ export function HistoryChart({ rows }: { rows: ComparisonRow[] }) {
           <CartesianGrid
             strokeDasharray="3 5"
             vertical={false}
-            stroke="#e5eae7"
+            stroke="var(--chart-grid)"
           />
           <XAxis
             dataKey="date"
@@ -153,20 +158,25 @@ export function HistoryChart({ rows }: { rows: ComparisonRow[] }) {
             minTickGap={35}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
           />
           <YAxis
             tickFormatter={(v) => `${v}%`}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
           />
           <Tooltip
             labelFormatter={(v) => dateLabel(String(v))}
             formatter={(v) => percent(Number(v) / 100)}
-            contentStyle={{ borderRadius: 12 }}
+            contentStyle={{
+              borderRadius: 12,
+              border: "1px solid var(--chart-grid)",
+              background: "var(--chart-tooltip-bg)",
+              color: "var(--chart-axis)",
+            }}
           />
-          <ReferenceLine y={0} stroke="#bdc9c0" />
+          <ReferenceLine y={0} stroke="var(--chart-grid)" />
           <Legend iconType="circle" />
           {available.map((r, i) => (
             <Line
@@ -174,7 +184,12 @@ export function HistoryChart({ rows }: { rows: ComparisonRow[] }) {
               type="linear"
               dataKey={r.id}
               name={r.name}
-              stroke={["#38775e", "#548bc0", "#bf9052", "#8b74a2"][i % 4]}
+              stroke={[
+                "var(--chart-series-1)",
+                "var(--chart-series-2)",
+                "var(--chart-series-3)",
+                "var(--chart-series-4)",
+              ][i % 4]}
               strokeWidth={2.5}
               dot={false}
               connectNulls={false}
