@@ -11,7 +11,6 @@ import {
   spreadsheetReturn,
 } from "./finance";
 const settings: Settings = {
-  capital: 30000,
   rates: [100, 110, 120, 105],
   reference: 1,
   method: "historical",
@@ -74,7 +73,7 @@ describe("cálculos financeiros", () => {
   it("preserva fim de mês ao subtrair meses", () =>
     expect(monthsAgo("2026-03-31", 1)).toBe("2026-02-28"));
   it("calcula valor final e diferença em pontos percentuais", () => {
-    const a = analyze(data, settings, "2026-01-05", "2026-01-09");
+    const a = analyze(data, settings, 30000, "2026-01-05", "2026-01-09");
     expect(a.market[0].final).toBeCloseTo(33000);
     expect(a.market[0].difference).toBeCloseTo(0.1 - a.reference.rate!);
     expect(a.fixed[1].difference).toBe(0);
@@ -83,6 +82,7 @@ describe("cálculos financeiros", () => {
     const a = analyze(
       data,
       { ...settings, rates: [100, 115, 120, 105] },
+      30000,
       "2026-01-05",
       "2026-01-09",
     );
@@ -99,13 +99,14 @@ describe("cálculos financeiros", () => {
         },
       },
       settings,
+      30000,
       "2026-01-05",
       "2026-01-09",
     );
     expect(a.reference.rate).toBeNull();
   });
   it("alinha o mercado ao último CDI publicado", () => {
-    const a = analyze(data, settings, "2026-01-05", "2026-01-12");
+    const a = analyze(data, settings, 30000, "2026-01-05", "2026-01-12");
     expect(a.end).toBe("2026-01-09");
     expect(a.reference.rate).not.toBeNull();
   });
@@ -124,6 +125,7 @@ describe("cálculos financeiros", () => {
         ],
       },
       settings,
+      30000,
       "2026-01-05",
       "2026-01-09",
     );
@@ -144,11 +146,11 @@ describe("cálculos financeiros", () => {
         },
       ],
     };
-    const a = analyze(d, settings, "2026-01-05", "2026-01-09");
+    const a = analyze(d, settings, 30000, "2026-01-05", "2026-01-09");
     expect(a.market.every((r) => r.rate === null)).toBe(true);
   });
   it("ranking exclui índice, renda fixa e dados ausentes, sem repetir empates", () => {
-    const a = analyze(data, settings, "2026-01-05", "2026-01-09");
+    const a = analyze(data, settings, 30000, "2026-01-05", "2026-01-09");
     const rows: ComparisonRow[] = [
       ...a.market,
       ...a.fixed,

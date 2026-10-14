@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useData } from "./hooks/useData";
+import { useCapitalAnalisado } from "./contexts/CapitalContext";
 import {
   analyze,
   dateLabel,
@@ -77,7 +78,6 @@ const tabs: {
   },
 ];
 const defaultSettings: Settings = {
-  capital: 30000,
   rates: [100, 110, 120, 105],
   reference: 1,
   method: "historical",
@@ -97,10 +97,11 @@ export default function App() {
     [sort, setSort] = useState("desc"),
     [selected, setSelected] = useState(["PETR4", "ITUB4"]),
     [help, setHelp] = useState(false);
+  const { capitalAnalisado, setCapitalAnalisado } = useCapitalAnalisado();
   const { data, loading, error } = useData(start, end, refresh);
   const analysis = useMemo(
-    () => analyze(data, settings, start, end),
-    [data, settings, start, end],
+    () => analyze(data, settings, capitalAnalisado, start, end),
+    [data, settings, capitalAnalisado, start, end],
   );
   const { fixed, market, reference } = analysis;
   const current = tabs.find((t) => t.id === tab)!;
@@ -366,11 +367,11 @@ export default function App() {
                   type="number"
                   min="1"
                   max="10000000000"
-                  value={settings.capital}
+                  value={capitalAnalisado}
                   onChange={(e) => {
                     const n = Number(e.target.value);
                     if (n >= 1 && n <= 1e10)
-                      setSettings((s) => ({ ...s, capital: n }));
+                      setCapitalAnalisado(n);
                   }}
                 />
               </div>

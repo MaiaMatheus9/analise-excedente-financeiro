@@ -4,6 +4,7 @@ import { ComparisonTable } from "../components/ComparisonTable";
 import { SettingsForm } from "../components/SettingsForm";
 import { Kpi, PanelTitle } from "../components/Ui";
 import { money, percent } from "../lib/finance";
+import { useCapitalAnalisado } from "../contexts/CapitalContext";
 import type { PageProps } from "./types";
 
 export default function Fixed({
@@ -13,6 +14,8 @@ export default function Fixed({
   analysis,
   reference,
 }: PageProps) {
+  const { capitalAnalisado } = useCapitalAnalisado();
+
   return (
     <>
       <section className="panel">
@@ -32,7 +35,7 @@ export default function Fixed({
             detail={
               r.rate === null
                 ? "CDI indisponível"
-                : `Ganho bruto: ${money(r.final! - settings.capital)} · ${percent(r.rate)}`
+                : `Ganho bruto: ${money(r.final! - capitalAnalisado)} · ${percent(r.rate)}`
             }
             blue={r.id === reference.id}
           />
