@@ -10,6 +10,7 @@ export default function Compare({
   all,
   reference,
   benchmark,
+  onShorterPeriod,
 }: PageProps) {
   return (
     <>
@@ -19,7 +20,7 @@ export default function Compare({
           subtitle={`${settings.method === "historical" ? "CDI histórico acumulado" : "CDI atual constante (estimativa)"} · valores brutos · diferença em pontos percentuais`}
         />
         {filterBar}
-        <ComparisonTable rows={filtered(all)} referenceId={reference.id} />
+        <ComparisonTable onShorterPeriod={onShorterPeriod} rows={filtered(all)} referenceId={reference.id} />
       </section>
       <div className="two-columns">
         <section className="panel">
@@ -45,3 +46,4 @@ export default function Compare({
     </>
   );
 }
+

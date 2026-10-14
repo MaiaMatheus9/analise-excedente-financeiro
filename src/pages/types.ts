@@ -2,6 +2,7 @@ import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { analyze } from "../lib/finance";
 import type { ComparisonRow, DataResponse, Settings } from "../types";
 export interface PageProps {
+  onShorterPeriod: () => void;
   settings: Settings;
   setSettings: Dispatch<SetStateAction<Settings>>;
   analysis: ReturnType<typeof analyze>;
@@ -21,3 +22,4 @@ export interface PageProps {
   selected: string[];
   setSelected: Dispatch<SetStateAction<string[]>>;
 }
+

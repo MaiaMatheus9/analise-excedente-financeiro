@@ -5,12 +5,17 @@ export function ComparisonTable({
   rows,
   referenceId,
   prices = false,
+  onShorterPeriod,
 }: {
   rows: ComparisonRow[];
   referenceId: string;
   prices?: boolean;
+  onShorterPeriod?: () => void;
 }) {
+  const unavailable = onShorterPeriod ? rows.filter((r) => r.rate === null) : [];
+  const visible = onShorterPeriod ? rows.filter((r) => r.rate !== null) : rows;
   return (
+    <>
     <div className="table-scroll">
       <table>
         <thead>
@@ -29,7 +34,7 @@ export function ComparisonTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {visible.map((r) => (
             <tr
               key={r.id}
               className={r.id === referenceId ? "reference-row" : ""}
@@ -93,9 +98,34 @@ export function ComparisonTable({
           ))}
         </tbody>
       </table>
-      {!rows.length && (
-        <p className="table-empty">Nenhuma alternativa nesta seleção.</p>
+      {!visible.length && (
+        <p className="table-empty">Nenhuma alternativa com retorno disponível nesta seleção.</p>
       )}
     </div>
+    {unavailable.length > 0 && (
+      <div className="availability-note">
+        <details>
+          <summary>
+            {unavailable.length} {unavailable.length === 1 ? "ativo sem histórico disponível" : "ativos sem histórico disponível"} neste período
+          </summary>
+          <p>A disponibilidade depende do período e da fonte. Estes ativos não entram no ranking nem nos gráficos de retorno.</p>
+          <ul>
+            {unavailable.map((r) => (
+              <li key={r.id}>
+                <strong>{r.name}</strong>
+                <span>{r.error || "Sem dados suficientes para comparar este período."}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+        <button type="button" className="button secondary" onClick={onShorterPeriod}>
+          Ver período de 3 meses
+        </button>
+        <small>Altera o período da análise em todas as abas.</small>
+      </div>
+    )}
+    </>
   );
 }
+
+

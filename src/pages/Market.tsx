@@ -10,6 +10,7 @@ export default function Market({
   market,
   reference,
   benchmark,
+  onShorterPeriod,
 }: PageProps) {
   return (
     <>
@@ -19,7 +20,7 @@ export default function Market({
           subtitle={`${validMarket.length} de 8 ativos com histórico comparável · dados consultados automaticamente`}
         />
         {filterBar}
-        <ComparisonTable
+        <ComparisonTable onShorterPeriod={onShorterPeriod}
           rows={filtered(market.filter((r) => r.category !== "Índice"))}
           referenceId={reference.id}
           prices
@@ -39,3 +40,4 @@ export default function Market({
     </>
   );
 }
+

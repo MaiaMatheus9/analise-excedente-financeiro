@@ -1568,3 +1568,37 @@ footer > span {
     transition: none !important;
   }
 }
+
+.availability-note {
+  margin: 16px 22px 22px;
+  padding: 18px;
+  border: 1px solid #dce5d7;
+  border-radius: 10px;
+  background: #f5f8f2;
+  color: #355545;
+}
+.availability-note summary {
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.availability-note p, .availability-note li span, .availability-note > small {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #617166;
+}
+.availability-note ul {
+  list-style: none;
+  padding: 0;
+}
+.availability-note li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 8px 0;
+  border-top: 1px solid #dce5d7;
+}
+.availability-note li strong { min-width: 65px; }
+.availability-note .button { margin-top: 14px; white-space: normal; }
+.availability-note > small { display: block; margin-top: 8px; }
+.availability-note summary:focus-visible { outline: 2px solid #558465; outline-offset: 4px; }

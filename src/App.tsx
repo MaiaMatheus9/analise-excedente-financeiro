@@ -194,6 +194,7 @@ export default function App() {
     </div>
   );
   const pageProps = {
+    onShorterPeriod: () => preset("3m"),
     settings,
     setSettings,
     analysis,
@@ -571,3 +572,4 @@ export default function App() {
     </div>
   );
 }
+
