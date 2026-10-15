@@ -92,8 +92,8 @@ export default function App() {
     [mobile, setMobile] = useState(false),
     [settings, setSettings] = useState(defaultSettings),
     [period, setPeriod] = useState("1m"),
-    [end, setEnd] = useState(today()),
-    [start, setStart] = useState(monthsAgo(today(), 1)),
+    [end, setEnd] = useState(shiftDays(today(), -1)),
+    [start, setStart] = useState(monthsAgo(shiftDays(today(), -1), 1)),
     [draftStart, setDraftStart] = useState(start),
     [draftEnd, setDraftEnd] = useState(end),
     [dateError, setDateError] = useState(""),
@@ -157,7 +157,7 @@ export default function App() {
   function preset(key: string) {
     setPeriod(key);
     if (key === "custom") return;
-    const to = today(),
+    const to = [shiftDays(today(), -1), ...(data?.cdi.date ? [data.cdi.date] : [])].sort()[0],
       from = key.endsWith("m")
         ? monthsAgo(to, Number(key.slice(0, -1)))
         : shiftDays(to, -Number(key));

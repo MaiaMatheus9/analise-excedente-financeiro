@@ -68,3 +68,13 @@ it("recalcula diferenças com poupança e Selic como referência", () => {
     expect(result.fixed[0].difference).toBeCloseTo(result.fixed[0].rate! - result.reference.rate!);
   }
 });
+
+it("poupança credita no aniversário exato e acumula ciclos seguintes", () => {
+  const periods = [
+    {date:"2026-09-14",end:"2026-10-14",rate:.006},
+    {date:"2026-10-14",end:"2026-11-14",rate:.007},
+  ];
+  expect(savingsReturn(periods,"2026-09-14","2026-10-13")).toBe(0);
+  expect(savingsReturn(periods,"2026-09-14","2026-10-14")).toBeCloseTo(.006);
+  expect(savingsReturn(periods,"2026-09-14","2026-11-14")).toBeCloseTo(1.006*1.007-1);
+});

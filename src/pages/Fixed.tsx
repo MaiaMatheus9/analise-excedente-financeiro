@@ -40,7 +40,7 @@ export default function Fixed({
             detail={
               r.rate === null
                 ? (r.error ?? "Dados indisponíveis")
-                : `Ganho bruto: ${money(r.final! - capitalAnalisado)} · ${percent(r.rate)}`
+                : r.id === "savings" && r.rate === 0 ? `0,00% · ${r.basis}` : `Ganho bruto: ${money(r.final! - capitalAnalisado)} · ${percent(r.rate)}`
             }
             blue={r.id === reference.id}
           />

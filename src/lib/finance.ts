@@ -130,6 +130,11 @@ export function completeDailyReturn(
   }
   return historicalReturn(daily, 1, start, end);
 }
+export function firstSavingsAnniversary(start: string) {
+  const cycleStart = Number(start.slice(8)) > 28
+    ? monthsAgo(start.slice(0, 8) + "01", -1) : start;
+  return monthsAgo(cycleStart, -1);
+}
 export function savingsReturn(
   periods: SavingsPoint[],
   start: string,
@@ -269,8 +274,9 @@ export function analyze(
       rate: data?.savings
         ? savingsReturn(data.savings.periods, effectiveStart, effectiveEnd)
         : null,
-      basis:
-        "BCB: rendimento por aniversário mensal completo, já incluindo TR. Depósito único, sem saques; ciclo incompleto não rende.",
+      basis: effectiveEnd < firstSavingsAnniversary(effectiveStart)
+        ? `Sem aniversário completo até ${dateLabel(effectiveEnd)}. Primeiro rendimento em ${dateLabel(firstSavingsAnniversary(effectiveStart))}. A poupança não rende proporcionalmente por dia.`
+        : "BCB: rendimento por aniversário mensal completo, já incluindo TR. Depósito único, sem saques; ciclo incompleto não rende.",
       error:
         data?.savings?.error ??
         "Poupança indisponível ou incompleta para o intervalo.",
