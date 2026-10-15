@@ -29,6 +29,7 @@ export function SettingsForm({
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
@@ -88,6 +89,11 @@ export function SettingsForm({
         </label>
       </div>
       <h3>Ofertas que você deseja comparar</h3>
+      <button type="button" className="button secondary" onClick={() => {
+        const restored = { ...value, rates: [100, 110, 120, 105, 90, 90] };
+        reset(restored);
+        onChange(restored);
+      }}>Restaurar taxas padrão</button>
       <p className="muted">
         Percentuais ilustrativos e editáveis. Preencha com as condições
         oferecidas pelo seu banco.
