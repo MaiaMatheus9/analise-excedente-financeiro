@@ -1,3 +1,4 @@
+import { downloadComparison } from "../lib/exportComparison";
 import { useState } from "react";
 import { ReturnChart } from "../components/Charts";
 import { ComparisonTable } from "../components/ComparisonTable";
@@ -5,7 +6,7 @@ import { Benchmark, PanelTitle } from "../components/Ui";
 import type { PageProps } from "./types";
 
 export default function Compare({
-  filterBar, filtered, market, reference, benchmark, onShorterPeriod,
+  filterBar, filtered, market, reference, benchmark, onShorterPeriod, settings,
 }: PageProps) {
   const [metric, setMetric] = useState<"rate" | "final">("rate");
   const rows = [reference, ...filtered(market.filter((r) => r.category !== "Índice"))];
@@ -14,6 +15,10 @@ export default function Compare({
       <PanelTitle title="Mercado × sua referência"
         subtitle="Valores brutos, antes de impostos e taxas. Diferença em pontos percentuais." />
       {filterBar}
+      <div style={{ padding: "0 22px 16px", display: "flex", justifyContent: "flex-end" }}>
+        <button type="button" className="button secondary" disabled={!rows.some((row) => row.rate !== null)}
+          onClick={() => downloadComparison(rows, reference, settings.method === "historical" ? "CDI histórico" : "CDI atual constante (estimativa)")}>Exportar CSV</button>
+      </div>
       <ComparisonTable rows={rows} referenceId={reference.id}
         onShorterPeriod={onShorterPeriod} compact />
     </section>
