@@ -1,3 +1,5 @@
+import { validRange } from "../src/lib/dateRange";
+import { shiftDays, monthsAgo } from "../src/lib/finance";
 import { z } from "zod";
 import type { DataResponse, MarketAsset, Point } from "../src/types";
 export const universe = [
@@ -15,6 +17,7 @@ const bcbSchema = z.array(
   z.object({
     data: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/),
     valor: z.string(),
+    dataFim: z.string().optional(),
   }),
 );
 const pointSchema = z.object({
@@ -82,6 +85,45 @@ const errorText = (e: unknown) =>
       : e instanceof Error
         ? e.message
         : "Não foi possível consultar a fonte.";
+async function bcbJson(url: string) {
+  try {
+    return await json(url);
+  } catch (error) {
+    // Uma repetição apenas para falhas transitórias do SGS, nunca para limite de uso.
+    if (
+      error instanceof Error &&
+      (error.name === "TimeoutError" || /HTTP 50[234]/.test(error.message))
+    )
+      return json(url);
+    throw error;
+  }
+}
+// Blocos de até cinco anos: respeita o limite de dez anos por consulta SGS.
+async function bcbHistory(series: number, start: string, end: string) {
+  const rows: z.infer<typeof bcbSchema> = [];
+  for (let from = start; from <= end;) {
+    const to = [monthsAgo(from, series === 12 ? -60 : -12), end].sort()[0];
+    rows.push(
+      ...(await cached(`bcb-${series}-${from}-${to}`, async () =>
+        bcbSchema.parse(
+          await bcbJson(
+            `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${series}/dados?formato=json&dataInicial=${br(from)}&dataFinal=${br(to)}`,
+          ),
+        ),
+      )),
+    );
+    from = shiftDays(to, 1);
+  }
+  return rows;
+}
+const dailyPoints = (rows: z.infer<typeof bcbSchema>) =>
+  rows
+    .map((p) => ({
+      date: iso(p.data),
+      rate: Number(p.valor.replace(",", ".")) / 100,
+    }))
+    .filter((p) => Number.isFinite(p.rate) && p.rate >= 0)
+    .sort((a, b) => a.date.localeCompare(b.date));
 export async function getData(
   start: string,
   end: string,
@@ -102,13 +144,7 @@ export async function getData(
           ),
         ),
       ),
-      cached(`bcb-${start}-${end}`, async () =>
-        bcbSchema.parse(
-          await json(
-            `https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json&dataInicial=${br(start)}&dataFinal=${br(end)}`,
-          ),
-        ),
-      ),
+      bcbHistory(12, start, end),
     ]);
     if (latest.status === "fulfilled" && latest.value.length) {
       const p = latest.value.at(-1)!;
@@ -131,9 +167,38 @@ export async function getData(
       .map((r) => errorText((r as PromiseRejectedResult).reason));
     if (errors.length) result.cdi.error = errors.join(" ");
   };
+  const extraJob = async () => {
+    const [selic, savings] = await Promise.allSettled([
+      bcbHistory(11, start, end),
+      bcbHistory(195, start, end),
+    ]);
+    result.selic =
+      selic.status === "fulfilled"
+        ? { daily: dailyPoints(selic.value) }
+        : { daily: [], error: errorText(selic.reason) };
+    result.savings =
+      savings.status === "fulfilled"
+        ? {
+            periods: savings.value
+              .filter((p) => p.dataFim)
+              .map((p) => ({
+                date: iso(p.data),
+                end: iso(p.dataFim!),
+                rate: Number(p.valor.replace(",", ".")) / 100,
+              }))
+              .filter((p) => Number.isFinite(p.rate) && p.rate >= 0),
+          }
+        : { periods: [], error: errorText(savings.reason) };
+  };
   const marketJob = async () => {
     for (const [symbol, name, category] of universe) {
       const item: MarketAsset = { symbol, name, category, points: [] };
+      if (start < monthsAgo(end, 24)) {
+        item.error =
+          "Período longo disponível para renda fixa. Consulte até dois anos para renda variável, conforme seu plano.";
+        result.assets.push(item);
+        continue;
+      }
       if (!token && !["PETR4", "VALE3", "ITUB4"].includes(symbol)) {
         item.error = "Requer chave brapi com acesso a este ativo.";
         result.assets.push(item);
@@ -177,34 +242,24 @@ export async function getData(
       result.assets.push(item);
     }
   };
-  await Promise.all([cdiJob(), marketJob()]);
+  await Promise.all([cdiJob(), extraJob(), marketJob()]);
   return result;
 }
 export async function handleApi(request: Request, token?: string) {
   const url = new URL(request.url);
   const start = url.searchParams.get("start") ?? "",
     end = url.searchParams.get("end") ?? "";
-  const valid = (v: string) =>
-    /^\d{4}-\d{2}-\d{2}$/.test(v) &&
-    !Number.isNaN(Date.parse(v)) &&
-    new Date(v).toISOString().slice(0, 10) === v;
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Sao_Paulo",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   }).format(new Date());
-  if (
-    !valid(start) ||
-    !valid(end) ||
-    start >= end ||
-    end > today ||
-    (Date.parse(end) - Date.parse(start)) / 86400000 > 730
-  )
+  if (!validRange(start, end, today))
     return Response.json(
       {
         error:
-          "Escolha um intervalo válido de até dois anos, sem datas futuras.",
+          "Escolha um intervalo válido de até dez anos, sem datas futuras.",
       },
       { status: 400 },
     );

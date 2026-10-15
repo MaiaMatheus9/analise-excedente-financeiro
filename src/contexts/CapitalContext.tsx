@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useContext,
@@ -18,20 +17,27 @@ const CapitalContext = createContext<CapitalContextType | null>(null);
 
 export function CapitalProvider({ children }: { children: ReactNode }) {
   const [capitalAnalisado, setCapitalAnalisado] = useState<number>(() => {
-    if (typeof window === "undefined") return 0;
-
-    const salvo = localStorage.getItem("capitalAnalisado");
-    return salvo !== null ? Number(salvo) : CAPITAL_INICIAL;
+    try {
+      const saved = localStorage.getItem("capitalAnalisado");
+      const value = saved === null ? CAPITAL_INICIAL : Number(saved);
+      return Number.isFinite(value) && value >= 1 && value <= 1e10
+        ? value
+        : CAPITAL_INICIAL;
+    } catch {
+      return CAPITAL_INICIAL;
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem("capitalAnalisado", String(capitalAnalisado));
+    try {
+      localStorage.setItem("capitalAnalisado", String(capitalAnalisado));
+    } catch {
+      /* Mantém o contexto em memória. */
+    }
   }, [capitalAnalisado]);
 
   return (
-    <CapitalContext.Provider
-      value={{ capitalAnalisado, setCapitalAnalisado }}
-    >
+    <CapitalContext.Provider value={{ capitalAnalisado, setCapitalAnalisado }}>
       {children}
     </CapitalContext.Provider>
   );
@@ -42,7 +48,7 @@ export function useCapitalAnalisado() {
 
   if (!context) {
     throw new Error(
-      "useCapitalAnalisado deve ser usado dentro de CapitalProvider"
+      "useCapitalAnalisado deve ser usado dentro de CapitalProvider",
     );
   }
 

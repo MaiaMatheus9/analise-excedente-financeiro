@@ -25,8 +25,9 @@ export default function Settings({ settings, setSettings, data }: PageProps) {
           </h3>
           <p>
             CDI anual: série SGS 4389, percentual ao ano, base 252. CDI
-            histórico: série SGS 12, taxa diária. A consulta é automática ao
-            abrir a aplicação e mudar o período.
+            histórico: série SGS 12, taxa diária. Selic diária: SGS 11.
+            Poupança: SGS 195, com início e fim de cada ciclo mensal. A consulta
+            é automática ao abrir a aplicação e mudar o período.
           </p>
           <h3>Mercado B3 via brapi</h3>
           <p>

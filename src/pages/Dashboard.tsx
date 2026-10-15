@@ -54,9 +54,9 @@ export default function Dashboard({
         />
         <Kpi
           icon={Landmark}
-          label="CDB DE REFERÊNCIA"
+          label="RENDA FIXA DE REFERÊNCIA"
           value={reference.rate === null ? "—" : percent(reference.rate)}
-          detail={`${reference.name} · ${settings.method === "historical" ? "CDI histórico" : "estimativa"}`}
+          detail={reference.name}
           blue
         />
       </div>
@@ -72,7 +72,7 @@ export default function Dashboard({
       <div className="two-columns">
         <section className="panel">
           <PanelTitle
-            title={`Top ${best.length || 4} da B3 × CDB`}
+            title={`Top ${best.length || 4} da B3 × referência`}
             subtitle="Retorno acumulado no intervalo"
           />
           <ReturnChart rows={[...best, reference]} referenceId={reference.id} />
@@ -81,7 +81,7 @@ export default function Dashboard({
               <i /> Renda variável
             </span>
             <span>
-              <i className="blue" /> CDB de referência
+              <i className="blue" /> Renda fixa de referência
             </span>
           </div>
         </section>
@@ -107,7 +107,7 @@ export default function Dashboard({
         <div>
           <strong>
             {best.length && reference.rate !== null
-              ? `${topCount} de ${best.length} ativos do ranking superaram o CDB de referência.`
+              ? `${topCount} de ${best.length} ativos do ranking superaram a renda fixa de referência.`
               : "O que os dados dizem sobre este período?"}
           </strong>
           <p>
@@ -128,7 +128,7 @@ export default function Dashboard({
       <div className="two-columns">
         <section className="panel">
           <PanelTitle
-            title="Menores retornos × CDB"
+            title="Menores retornos × referência"
             subtitle="Retorno percentual no mesmo intervalo"
           />
           <ReturnChart
@@ -151,7 +151,7 @@ export default function Dashboard({
       <section className="panel table-panel">
         <PanelTitle
           title="Números por trás dos gráficos"
-          subtitle="Ranking dos ativos disponíveis e CDB de referência"
+          subtitle="Ranking dos ativos disponíveis e Renda fixa de referência"
         />
         <ComparisonTable
           rows={[reference, ...filtered(validMarket)]}

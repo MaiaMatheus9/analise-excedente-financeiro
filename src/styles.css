@@ -2007,3 +2007,9 @@ footer > span {
 .availability-note .button { margin-top: 14px; white-space: normal; }
 .availability-note > small { display: block; margin-top: 8px; }
 .availability-note summary:focus-visible { outline: 2px solid var(--border-558465); outline-offset: 4px; }
+
+/* Mais períodos sem ultrapassar a largura do filtro. */
+.period-buttons { flex-wrap: wrap; }
+.fixed-kpis { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+
+.comparison-details-title { cursor: pointer; font-weight: 600; }

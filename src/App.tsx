@@ -1,3 +1,5 @@
+import { CapitalInput } from "./components/CapitalInput";
+import { validRange } from "./lib/dateRange";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeftRight,
@@ -57,7 +59,8 @@ const tabs: {
     id: "fixed",
     name: "Renda fixa",
     icon: Landmark,
-    description: "Explore o efeito das taxas dos CDBs e RDB sobre seu capital.",
+    description:
+      "Compare CDBs, RDB, LCI, LCA, Tesouro Selic estimado e poupança.",
   },
   {
     id: "market",
@@ -80,7 +83,7 @@ const tabs: {
   },
 ];
 const defaultSettings: Settings = {
-  rates: [100, 110, 120, 105],
+  rates: [100, 110, 120, 105, 90, 90],
   reference: 1,
   method: "historical",
 };
@@ -122,8 +125,15 @@ export default function App() {
   const { capitalAnalisado, setCapitalAnalisado } = useCapitalAnalisado();
   const { data, loading, error } = useData(start, end, refresh);
   const analysis = useMemo(
-    () => analyze(data, settings, capitalAnalisado, start, end),
-    [data, settings, capitalAnalisado, start, end],
+    () =>
+      analyze(
+        tab === "fixed" && data ? { ...data, assets: [] } : data,
+        settings,
+        capitalAnalisado,
+        start,
+        end,
+      ),
+    [data, settings, capitalAnalisado, start, end, tab],
   );
   const { fixed, market, reference } = analysis;
   const current = tabs.find((t) => t.id === tab)!;
@@ -158,15 +168,9 @@ export default function App() {
     setDateError("");
   }
   function applyDates() {
-    if (
-      !draftStart ||
-      !draftEnd ||
-      draftStart >= draftEnd ||
-      draftEnd > today() ||
-      (Date.parse(draftEnd) - Date.parse(draftStart)) / 86400000 > 730
-    ) {
+    if (!validRange(draftStart, draftEnd, today())) {
       setDateError(
-        "Escolha datas em ordem, até hoje, em um intervalo de até dois anos.",
+        "Escolha datas em ordem, até hoje, em um intervalo de até dez anos.",
       );
       return;
     }
@@ -187,7 +191,7 @@ export default function App() {
       <div className="segmented" aria-label="Filtrar por categoria">
         {[
           "Todas",
-          ...(tab === "compare" ? ["Renda fixa"] : []),
+          
           "Ação",
           "ETF",
           "FII",
@@ -400,17 +404,9 @@ export default function App() {
               Capital excedente
               <div className="money-input">
                 <span>R$</span>
-                <input
-                  aria-label="Capital excedente"
-                  type="number"
-                  min="1"
-                  max="10000000000"
+                <CapitalInput
                   value={capitalAnalisado}
-                  onChange={(e) => {
-                    const n = Number(e.target.value);
-                    if (n >= 1 && n <= 1e10)
-                      setCapitalAnalisado(n);
-                  }}
+                  onChange={setCapitalAnalisado}
                 />
               </div>
             </label>
@@ -424,6 +420,9 @@ export default function App() {
                   ["3m", "3 meses"],
                   ["6m", "6 meses"],
                   ["12m", "12 meses"],
+                  ["24m", "2 anos"],
+                  ["60m", "5 anos"],
+                  ["120m", "10 anos"],
                   ["custom", "Personalizado"],
                 ].map(([key, label]) => (
                   <button
@@ -448,10 +447,8 @@ export default function App() {
                   }))
                 }
               >
-                {settings.rates.slice(0, 3).map((p, i) => (
-                  <option key={i} value={i}>
-                    CDB {["A", "B", "C"][i]} · {p}% CDI
-                  </option>
+                {fixed.map((row, i) => (
+                  <option key={row.id} value={i}>{row.name}</option>
                 ))}
               </select>
             </label>
@@ -464,6 +461,7 @@ export default function App() {
                     value={draftStart}
                     max={today()}
                     onChange={(e) => setDraftStart(e.target.value)}
+                    onInput={(e) => setDraftStart(e.currentTarget.value)}
                   />
                 </label>
                 <label>
@@ -473,6 +471,7 @@ export default function App() {
                     value={draftEnd}
                     max={today()}
                     onChange={(e) => setDraftEnd(e.target.value)}
+                    onInput={(e) => setDraftEnd(e.currentTarget.value)}
                   />
                 </label>
                 <button className="button" onClick={applyDates}>
@@ -528,6 +527,12 @@ export default function App() {
               <Info size={18} />
               <span>Banco Central: {data.cdi.error}</span>
             </div>
+          )}
+          {Number(period.replace("m", "")) > 12 && (
+            <p className="form-note">
+              Histórico longo para renda fixa. A cobertura da renda variável
+              depende do provedor.
+            </p>
           )}
           {data && (
             <p className="analysis-scope">
@@ -590,7 +595,7 @@ export default function App() {
                 Na aba Renda fixa, preencha os percentuais das ofertas
                 bancárias.
               </li>
-              <li>Escolha um CDB como referência e compare os retornos.</li>
+              <li>Escolha uma renda fixa como referência e compare os retornos.</li>
               <li>
                 Explore o Dashboard e o Histórico, observando as fontes e as
                 datas.
@@ -611,4 +616,3 @@ export default function App() {
     </div>
   );
 }
-

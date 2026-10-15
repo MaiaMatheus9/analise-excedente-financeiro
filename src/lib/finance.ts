@@ -1,4 +1,10 @@
-import type { CdiPoint, ComparisonRow, DataResponse, Settings } from "../types";
+import type {
+  CdiPoint,
+  ComparisonRow,
+  DataResponse,
+  Settings,
+  SavingsPoint,
+} from "../types";
 export const money = (v: number) =>
   new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -113,6 +119,37 @@ export function historicalReturn(
     ? points.reduce((factor, p) => factor * (1 + p.rate * multiple), 1) - 1
     : null;
 }
+export function completeDailyReturn(
+  daily: CdiPoint[],
+  start: string,
+  end: string,
+) {
+  const dates = new Set(daily.map((p) => p.date));
+  for (let day = shiftDays(start, 1); day <= end; day = shiftDays(day, 1)) {
+    if (isBusinessDay(day) && !dates.has(day)) return null;
+  }
+  return historicalReturn(daily, 1, start, end);
+}
+export function savingsReturn(
+  periods: SavingsPoint[],
+  start: string,
+  end: string,
+) {
+  // Depósitos nos dias 29 a 31 iniciam o ciclo no primeiro dia do próximo mês.
+  let cursor =
+    Number(start.slice(8)) > 28
+      ? monthsAgo(start.slice(0, 8) + "01", -1)
+      : start;
+  let factor = 1;
+  while (monthsAgo(cursor, -1) <= end) {
+    const next = monthsAgo(cursor, -1);
+    const p = periods.find((p) => p.date === cursor && p.end === next);
+    if (!p) return null;
+    factor *= 1 + p.rate;
+    cursor = next;
+  }
+  return factor - 1;
+}
 export function rank(rows: ComparisonRow[], count: number, ascending = false) {
   return rows
     .filter(
@@ -186,12 +223,19 @@ export function analyze(
       : data?.cdi.annual != null
         ? estimatedReturn(data.cdi.annual, multiple, days)
         : null;
-  const ref = getReturn(settings.rates[settings.reference] / 100);
-  const fixed: ComparisonRow[] = settings.rates.map((p, i) => {
+  const ref = settings.reference < 6 ? getReturn((settings.rates[settings.reference] ?? 90) / 100) : null;
+  const rates = [
+    ...settings.rates.slice(0, 4),
+    settings.rates[4] ?? 90,
+    settings.rates[5] ?? 90,
+  ];
+  const fixed: ComparisonRow[] = rates.map((p, i) => {
     const rate = getReturn(p / 100);
     return {
       id: `fixed-${i}`,
-      name: `${["CDB A", "CDB B", "CDB C", "RDB"][i]} · ${p}% CDI`,
+      basis:
+        "Simulação bruta pelo CDI; taxa informada, sem tributos, carência ou vencimento.",
+      name: `${["CDB A", "CDB B", "CDB C", "RDB", "LCI", "LCA"][i]} · ${p}% CDI`,
       category: "Renda fixa",
       rate,
       final: rate === null ? null : capital * (1 + rate),
@@ -204,6 +248,44 @@ export function analyze(
           : undefined,
     };
   });
+  const additions = [
+    {
+      id: "treasury-selic",
+      name: "Tesouro Selic · estimativa",
+      rate: completeDailyReturn(
+        data?.selic?.daily ?? [],
+        effectiveStart,
+        effectiveEnd,
+      ),
+      basis:
+        "Referência pela Selic diária (BCB). Não é retorno de um título: sem ágio, deságio, marcação a mercado, impostos ou custódia.",
+      error:
+        data?.selic?.error ??
+        "Selic indisponível ou incompleta para o intervalo.",
+    },
+    {
+      id: "savings",
+      name: "Poupança · pessoa física",
+      rate: data?.savings
+        ? savingsReturn(data.savings.periods, effectiveStart, effectiveEnd)
+        : null,
+      basis:
+        "BCB: rendimento por aniversário mensal completo, já incluindo TR. Depósito único, sem saques; ciclo incompleto não rende.",
+      error:
+        data?.savings?.error ??
+        "Poupança indisponível ou incompleta para o intervalo.",
+    },
+  ];
+  for (const item of additions)
+    fixed.push({
+      ...item,
+      category: "Renda fixa",
+      start: effectiveStart,
+      end: effectiveEnd,
+      final: item.rate === null ? null : capital * (1 + item.rate),
+      difference: item.rate === null || ref === null ? null : item.rate - ref,
+      error: item.rate === null ? item.error : undefined,
+    });
   const market: ComparisonRow[] = (data?.assets ?? []).map((a) => {
     const points = a.points.filter(
       (p) => p.date >= effectiveStart && p.date <= effectiveEnd,
@@ -233,11 +315,12 @@ export function analyze(
         ...p,
         close: adjusted ? p.adjustedClose! : p.close,
       })),
-      basis: points.length === 0
-        ? undefined
-        : adjusted
-          ? "Série ajustada pelo provedor"
-          : "Fechamento do provedor; ajustes não uniformes",
+      basis:
+        points.length === 0
+          ? undefined
+          : adjusted
+            ? "Série ajustada pelo provedor"
+            : "Fechamento do provedor; ajustes não uniformes",
       error:
         a.error ??
         (rate === null
@@ -245,10 +328,15 @@ export function analyze(
           : undefined),
     };
   });
+  const chosenReference = fixed[settings.reference] ?? fixed[1];
+  for (const row of [...fixed, ...market]) {
+    row.difference = row.rate === null || chosenReference.rate === null
+      ? null : row.rate - chosenReference.rate;
+  }
   return {
     fixed,
     market,
-    reference: fixed[settings.reference],
+    reference: chosenReference,
     start: effectiveStart,
     end: effectiveEnd,
     days,

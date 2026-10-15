@@ -15,7 +15,12 @@ export interface CdiPoint {
   date: string;
   rate: number;
 }
+export interface SavingsPoint extends CdiPoint {
+  end: string;
+}
 export interface DataResponse {
+  selic?: { daily: CdiPoint[]; error?: string };
+  savings?: { periods: SavingsPoint[]; error?: string };
   fetchedAt: string;
   cdi: {
     annual: number | null;

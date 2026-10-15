@@ -23,6 +23,11 @@ export default function Fixed({
           title="Monte suas alternativas de renda fixa"
           subtitle="Ajuste as taxas e veja os resultados mudarem automaticamente"
         />
+        <p className="form-note">
+          Nesta aba, a renda fixa usa todo o período solicitado, sem depender
+          das datas da bolsa. No Comparador, as datas são alinhadas entre
+          alternativas.
+        </p>
         <SettingsForm value={settings} onChange={setSettings} />
       </section>
       <div className="kpi-grid fixed-kpis">
@@ -34,7 +39,7 @@ export default function Fixed({
             value={r.final === null ? "—" : money(r.final)}
             detail={
               r.rate === null
-                ? "CDI indisponível"
+                ? (r.error ?? "Dados indisponíveis")
                 : `Ganho bruto: ${money(r.final! - capitalAnalisado)} · ${percent(r.rate)}`
             }
             blue={r.id === reference.id}

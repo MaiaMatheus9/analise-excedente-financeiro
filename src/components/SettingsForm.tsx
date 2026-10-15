@@ -1,13 +1,10 @@
+import { CapitalInput } from "./CapitalInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCapitalAnalisado } from "../contexts/CapitalContext";
 import type { Settings } from "../types";
 const settingsFormSchema = z.object({
-  capital: z.coerce
-    .number()
-    .min(1, "Informe pelo menos R$ 1.")
-    .max(1e10, "Capital acima do limite."),
   rates: z
     .array(
       z.coerce
@@ -15,11 +12,11 @@ const settingsFormSchema = z.object({
         .min(0, "Use um percentual positivo.")
         .max(500, "Máximo de 500% do CDI."),
     )
-    .length(4),
-  reference: z.coerce.number().int().min(0).max(2),
+    .length(6),
+  reference: z.coerce.number().int().min(0).max(7),
   method: z.enum(["historical", "estimate"]),
 });
-export const settingsSchema = settingsFormSchema.omit({ capital: true });
+export const settingsSchema = settingsFormSchema;
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 export function SettingsForm({
   value,
@@ -35,11 +32,17 @@ export function SettingsForm({
     formState: { errors },
   } = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
-    values: { ...value, capital: capitalAnalisado },
+    values: {
+      ...value,
+      rates: [
+        ...value.rates.slice(0, 4),
+        value.rates[4] ?? 90,
+        value.rates[5] ?? 90,
+      ],
+    },
     mode: "onChange",
   });
-  function submit({ capital, ...settings }: SettingsFormValues) {
-    setCapitalAnalisado(capital);
+  function submit(settings: SettingsFormValues) {
     onChange(settings);
   }
   return (
@@ -53,33 +56,33 @@ export function SettingsForm({
       <div className="input-grid">
         <label>
           Capital excedente (R$)
-          <input
-            type="number"
-            min="1"
-            max="10000000000"
-            step="100"
-            {...register("capital")}
+          <CapitalInput
+            value={capitalAnalisado}
+            onChange={setCapitalAnalisado}
+            label="Capital excedente (R$)"
           />
-          {errors.capital && (
-            <small className="negative">{errors.capital.message}</small>
-          )}
         </label>
         <label>
-          CDB de referência
+          Renda fixa de referência
           <select {...register("reference")}>
             <option value="0">CDB A</option>
             <option value="1">CDB B</option>
             <option value="2">CDB C</option>
+            <option value="3">RDB</option>
+            <option value="4">LCI</option>
+            <option value="5">LCA</option>
+            <option value="6">Tesouro Selic · estimativa</option>
+            <option value="7">Poupança</option>
           </select>
         </label>
         <label className="span-two">
           Método da renda fixa
           <select {...register("method")}>
             <option value="historical">
-              CDI histórico — taxas observadas no período
+              CDI histórico — CDB, RDB, LCI e LCA
             </option>
             <option value="estimate">
-              CDI atual — estimativa com taxa constante
+              CDI atual — estimativa de CDB, RDB, LCI e LCA
             </option>
           </select>
         </label>
@@ -90,7 +93,7 @@ export function SettingsForm({
         oferecidas pelo seu banco.
       </p>
       <div className="rate-grid">
-        {["CDB A", "CDB B", "CDB C", "RDB"].map((name, i) => (
+        {["CDB A", "CDB B", "CDB C", "RDB", "LCI", "LCA"].map((name, i) => (
           <label key={name}>
             {name}
             <div className="suffix-input">
@@ -110,6 +113,11 @@ export function SettingsForm({
           </label>
         ))}
       </div>
+      <p className="form-note">
+        Tesouro Selic estimado e poupança usam suas próprias séries históricas
+        do Banco Central. Comparação bruta: tributos, taxas, vencimentos e
+        carências não são modelados.
+      </p>
       <p className="form-note">
         As alterações válidas atualizam a comparação automaticamente.
       </p>

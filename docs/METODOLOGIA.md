@@ -66,3 +66,14 @@ Contagem em UTC para evitar deslocamentos de fuso. Dia atual e limites de consul
 - Histórico e preços ajustados: https://brapi.dev/docs/acoes/historico
 - Acesso e autenticação: https://brapi.dev/docs
 - Restrições de GOOGLEFINANCE fora do Sheets: https://support.google.com/docs/answer/3093281?hl=pt-BR
+
+## Ampliação de renda fixa (outubro de 2026)
+- LCI e LCA: cenários de percentual do CDI editável, sem inventar ofertas. Comparação BRUTA, sem IR, IOF, carência ou vencimento; portanto não mede vantagem tributária nem garante liquidez.
+- Tesouro Selic: estimativa pelo fator acumulado da Selic diária (SGS 11), não cotação/retorno de um título específico. Não incorpora ágio/deságio, marcação a mercado, IR, IOF ou custódia. Não representa Tesouro IPCA+ ou Prefixado.
+- Poupança: pessoa física, depósito único sem saques, regra nova. SGS 195 fornece data inicial, dataFim e rendimento mensal já com TR. Acumulam-se apenas ciclos completos; depósitos de 29 a 31 iniciam ciclo em 1º do mês seguinte. Série incompleta torna o resultado indisponível.
+- Intervalo histórico de até dez anos; consultas BCB em blocos de cinco anos para CDI e um ano para Selic/poupança, com uma repetição em falhas transitórias. Mercado acima de dois anos não é consultado nesta versão.
+- Na aba Renda fixa usa-se o período solicitado até o último CDI disponível. No Comparador as alternativas continuam alinhadas às mesmas datas do mercado.
+- O método CDI atual só afeta produtos indexados ao CDI. Selic e poupança continuam históricas. Não é projeção futura.
+Fontes: https://dadosabertos.bcb.gov.br/dataset/195-depositos-de-poupanca-a-partir-de-04052012---rentabilidade-no-periodo
+https://www.bcb.gov.br/meubc/faqs/p/posso-abrir-caderneta-de-poupanca-nos-dias-29-30-e-31-qual-a-diferenca
+https://www.tesourodireto.com.br/sobre-o-tesouro/regras-e-regulamento

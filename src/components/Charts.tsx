@@ -77,7 +77,11 @@ export function ReturnChart({
             axisLine={false}
             tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
             tickFormatter={(v) =>
-              metric === "rate" ? `${Number(v).toLocaleString('pt-BR')}%` : `${Math.round(v / 1000).toLocaleString('pt-BR')} mil`
+              metric === "rate"
+                ? `${Number(v).toLocaleString("pt-BR")}%`
+                : Math.abs(v) < 1000
+                  ? Number(v).toLocaleString("pt-BR")
+                  : `${(v / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil`
             }
           />
           <Tooltip
@@ -184,12 +188,14 @@ export function HistoryChart({ rows }: { rows: ComparisonRow[] }) {
               type="linear"
               dataKey={r.id}
               name={r.name}
-              stroke={[
-                "var(--chart-series-1)",
-                "var(--chart-series-2)",
-                "var(--chart-series-3)",
-                "var(--chart-series-4)",
-              ][i % 4]}
+              stroke={
+                [
+                  "var(--chart-series-1)",
+                  "var(--chart-series-2)",
+                  "var(--chart-series-3)",
+                  "var(--chart-series-4)",
+                ][i % 4]
+              }
               strokeWidth={2.5}
               dot={false}
               connectNulls={false}

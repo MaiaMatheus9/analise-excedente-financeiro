@@ -30,28 +30,68 @@ describe("integração de dados", () => {
       Response.json(
         url.includes("4389")
           ? [{ data: "09/01/2026", valor: "13.65" }]
-          : url.includes("sgs.12")
+          : url.includes("sgs.12") || url.includes("sgs.11")
             ? [{ data: "09/01/2026", valor: "0.050788" }]
-            : {
-                results: [
-                  {
-                    symbol: new URL(url).searchParams.get("symbols"),
-                    data: {
-                      historicalDataPrice: [
-                        { date: 1767970800, close: 10, adjustedClose: 10 },
-                      ],
+            : url.includes("sgs.195")
+              ? [{ data: "05/01/2026", dataFim: "05/02/2026", valor: "0.6" }]
+              : {
+                  results: [
+                    {
+                      symbol: new URL(url).searchParams.get("symbols"),
+                      data: {
+                        historicalDataPrice: [
+                          { date: 1767970800, close: 10, adjustedClose: 10 },
+                        ],
+                      },
                     },
-                  },
-                ],
-              },
+                  ],
+                },
       ),
     );
     vi.stubGlobal("fetch", f);
     const d = await getData("2026-01-05", "2026-01-09");
     expect(d.cdi.annual).toBe(0.1365);
+    expect(d.selic?.daily[0].rate).toBeCloseTo(0.00050788);
+    expect(d.savings?.periods[0]).toEqual({
+      date: "2026-01-05",
+      end: "2026-02-05",
+      rate: 0.006,
+    });
     expect(d.cdi.daily[0].rate).toBeCloseTo(0.00050788);
-    expect(f).toHaveBeenCalledTimes(5);
+    expect(f).toHaveBeenCalledTimes(7);
     await getData("2026-01-05", "2026-01-09");
-    expect(f).toHaveBeenCalledTimes(5);
+    expect(f).toHaveBeenCalledTimes(7);
   });
+});
+
+it("aceita dez anos, divide as consultas SGS e não pede histórico longo à brapi", async () => {
+  const calls: string[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      calls.push(url);
+      return Response.json([]);
+    }),
+  );
+  const response = await handleApi(
+    new Request("http://localhost/api/data?start=2016-01-01&end=2026-01-01"),
+  );
+  expect(response.status).toBe(200);
+  expect(calls.some((url) => url.includes("brapi"))).toBe(false);
+  expect(calls.filter((url) => url.includes("sgs.12/"))).toHaveLength(2);
+  const body = await response.json();
+  expect(
+    body.assets.every((a: { error?: string }) =>
+      a.error?.includes("renda fixa"),
+    ),
+  ).toBe(true);
+});
+it("rejeita mais de dez anos sem consultar fontes", async () => {
+  const fetchMock = vi.fn();
+  vi.stubGlobal("fetch", fetchMock);
+  const response = await handleApi(
+    new Request("http://localhost/api/data?start=2015-12-31&end=2026-01-01"),
+  );
+  expect(response.status).toBe(400);
+  expect(fetchMock).not.toHaveBeenCalled();
 });
