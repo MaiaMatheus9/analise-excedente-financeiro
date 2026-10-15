@@ -123,7 +123,12 @@ export default function App() {
     }
   }, [theme]);
   const { capitalAnalisado, setCapitalAnalisado } = useCapitalAnalisado();
-  const { data, loading, error } = useData(start, end, refresh);
+  const { data, loading, error } = useData(
+    start,
+    end,
+    refresh,
+    tab === "fixed" ? "fixed" : "all",
+  );
   const analysis = useMemo(
     () =>
       analyze(
@@ -157,7 +162,10 @@ export default function App() {
   function preset(key: string) {
     setPeriod(key);
     if (key === "custom") return;
-    const to = [shiftDays(today(), -1), ...(data?.cdi.date ? [data.cdi.date] : [])].sort()[0],
+    const to = [
+        shiftDays(today(), -1),
+        ...(data?.cdi.date ? [data.cdi.date] : []),
+      ].sort()[0],
       from = key.endsWith("m")
         ? monthsAgo(to, Number(key.slice(0, -1)))
         : shiftDays(to, -Number(key));
@@ -189,13 +197,7 @@ export default function App() {
   const filterBar = (
     <div className="table-toolbar">
       <div className="segmented" aria-label="Filtrar por categoria">
-        {[
-          "Todas",
-          
-          "Ação",
-          "ETF",
-          "FII",
-        ].map((c) => (
+        {["Todas", "Ação", "ETF", "FII"].map((c) => (
           <button
             key={c}
             className={category === c ? "active" : ""}
@@ -448,7 +450,9 @@ export default function App() {
                 }
               >
                 {fixed.map((row, i) => (
-                  <option key={row.id} value={i}>{row.name}</option>
+                  <option key={row.id} value={i}>
+                    {row.name}
+                  </option>
                 ))}
               </select>
             </label>
@@ -547,11 +551,22 @@ export default function App() {
               · Preços ajustados quando disponíveis. O dia em curso é excluído.
             </p>
           )}
-          {tab === "dashboard" && <Dashboard {...pageProps} />}
-          {tab === "compare" && <Compare {...pageProps} />}
-          {tab === "fixed" && <Fixed {...pageProps} />}
-          {tab === "market" && <Market {...pageProps} />}
-          {tab === "history" && <History {...pageProps} />}
+          {loading && tab !== "settings" && (
+            <div className="notice" role="status">
+              <RefreshCw size={18} className="spin" />
+              <span>
+                Consultando o histórico do período. As fontes podem levar alguns
+                segundos para responder.
+              </span>
+            </div>
+          )}
+          {!loading && data && tab === "dashboard" && (
+            <Dashboard {...pageProps} />
+          )}
+          {!loading && data && tab === "compare" && <Compare {...pageProps} />}
+          {!loading && data && tab === "fixed" && <Fixed {...pageProps} />}
+          {!loading && data && tab === "market" && <Market {...pageProps} />}
+          {!loading && data && tab === "history" && <History {...pageProps} />}
           {tab === "settings" && <SettingsPage {...pageProps} />}
           <footer>
             <div>
@@ -595,7 +610,9 @@ export default function App() {
                 Na aba Renda fixa, preencha os percentuais das ofertas
                 bancárias.
               </li>
-              <li>Escolha uma renda fixa como referência e compare os retornos.</li>
+              <li>
+                Escolha uma renda fixa como referência e compare os retornos.
+              </li>
               <li>
                 Explore o Dashboard e o Histórico, observando as fontes e as
                 datas.

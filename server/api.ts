@@ -128,6 +128,7 @@ export async function getData(
   start: string,
   end: string,
   token?: string,
+  scope: "all" | "fixed" = "all",
 ): Promise<DataResponse> {
   const result: DataResponse = {
     fetchedAt: new Date().toISOString(),
@@ -242,7 +243,11 @@ export async function getData(
       result.assets.push(item);
     }
   };
-  await Promise.all([cdiJob(), extraJob(), marketJob()]);
+  await Promise.all([
+    cdiJob(),
+    extraJob(),
+    ...(scope === "all" ? [marketJob()] : []),
+  ]);
   return result;
 }
 export async function handleApi(request: Request, token?: string) {
@@ -263,7 +268,8 @@ export async function handleApi(request: Request, token?: string) {
       },
       { status: 400 },
     );
-  const data = await getData(start, end, token);
+  const scope = url.searchParams.get("scope") === "fixed" ? "fixed" : "all";
+  const data = await getData(start, end, token, scope);
   return Response.json(data, {
     headers: {
       "Cache-Control": "private, max-age=60",

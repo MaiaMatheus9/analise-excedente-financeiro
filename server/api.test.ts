@@ -95,3 +95,21 @@ it("rejeita mais de dez anos sem consultar fontes", async () => {
   expect(response.status).toBe(400);
   expect(fetchMock).not.toHaveBeenCalled();
 });
+
+it("consulta renda fixa sem aguardar nem chamar a brapi", async () => {
+  const f = vi.fn(async (_url: string) => Response.json([]));
+  vi.stubGlobal("fetch", f);
+  const response = await handleApi(
+    new Request(
+      "http://localhost/api/data?start=2025-01-01&end=2026-01-01&scope=fixed",
+    ),
+  );
+  expect(response.status).toBe(200);
+  expect(f.mock.calls.every((args) => !String(args[0]).includes("brapi"))).toBe(
+    true,
+  );
+  const body = await response.json();
+  expect(body.assets).toEqual([]);
+  expect(body.selic).toBeDefined();
+  expect(body.savings).toBeDefined();
+});
