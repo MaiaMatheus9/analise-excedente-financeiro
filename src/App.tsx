@@ -339,7 +339,11 @@ export default function App() {
               onClick={() => setRefresh((x) => x + 1)}
             >
               <RefreshCw size={16} className={loading ? "spin" : ""} />
-              {loading ? "Consultando…" : "Atualizar dados"}
+              {loading
+                ? "Consultando…"
+                : error
+                  ? "Tentar novamente"
+                  : "Atualizar dados"}
             </button>
           </div>
           {tab === "dashboard" && (
@@ -503,18 +507,17 @@ export default function App() {
             <div className="notice" role="status">
               <RefreshCw size={18} className="spin" />
               <span>
-                Consultando o histórico do período. As fontes podem levar alguns
-                segundos para responder.
+                {data
+                  ? "Os dados disponíveis já estão na tela. Carregando as demais fontes…"
+                  : "Consultando o histórico do período…"}
               </span>
             </div>
           )}
-          {!loading && data && tab === "dashboard" && (
-            <Dashboard {...pageProps} />
-          )}
-          {!loading && data && tab === "compare" && <Compare {...pageProps} />}
-          {!loading && data && tab === "fixed" && <Fixed {...pageProps} />}
-          {!loading && data && tab === "market" && <Market {...pageProps} />}
-          {!loading && data && tab === "history" && <History {...pageProps} />}
+          {data && tab === "dashboard" && <Dashboard {...pageProps} />}
+          {data && tab === "compare" && <Compare {...pageProps} />}
+          {data && tab === "fixed" && <Fixed {...pageProps} />}
+          {data && tab === "market" && <Market {...pageProps} />}
+          {data && tab === "history" && <History {...pageProps} />}
           {tab === "settings" && <SettingsPage {...pageProps} />}
           <footer>
             <div>

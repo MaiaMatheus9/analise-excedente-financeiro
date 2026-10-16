@@ -128,7 +128,7 @@ export async function getData(
   start: string,
   end: string,
   token?: string,
-  scope: "all" | "fixed" = "all",
+  scope: "all" | "fixed" | "cdi" | "extras" | "market" = "all",
 ): Promise<DataResponse> {
   const result: DataResponse = {
     fetchedAt: new Date().toISOString(),
@@ -192,18 +192,20 @@ export async function getData(
         : { periods: [], error: errorText(savings.reason) };
   };
   const marketJob = async () => {
-    for (const [symbol, name, category] of universe) {
+    const loadAsset = async ([
+      symbol,
+      name,
+      category,
+    ]: (typeof universe)[number]) => {
       const item: MarketAsset = { symbol, name, category, points: [] };
       if (start < monthsAgo(end, 24)) {
         item.error =
           "Período longo disponível para renda fixa. Consulte até dois anos para renda variável, conforme seu plano.";
-        result.assets.push(item);
-        continue;
+        return item;
       }
       if (!token && !["PETR4", "VALE3", "ITUB4"].includes(symbol)) {
         item.error = "Requer chave brapi com acesso a este ativo.";
-        result.assets.push(item);
-        continue;
+        return item;
       }
       try {
         item.points = await cached(
@@ -240,13 +242,19 @@ export async function getData(
       } catch (e) {
         item.error = errorText(e);
       }
-      result.assets.push(item);
+      return item;
+    };
+    // Três ativos por vez: reduz a espera sem disparar todo o universo de uma vez.
+    for (let i = 0; i < universe.length; i += 3) {
+      result.assets.push(
+        ...(await Promise.all(universe.slice(i, i + 3).map(loadAsset))),
+      );
     }
   };
   await Promise.all([
-    cdiJob(),
-    extraJob(),
-    ...(scope === "all" ? [marketJob()] : []),
+    ...(["all", "fixed", "cdi"].includes(scope) ? [cdiJob()] : []),
+    ...(["all", "fixed", "extras"].includes(scope) ? [extraJob()] : []),
+    ...(["all", "market"].includes(scope) ? [marketJob()] : []),
   ]);
   return result;
 }
@@ -268,7 +276,14 @@ export async function handleApi(request: Request, token?: string) {
       },
       { status: 400 },
     );
-  const scope = url.searchParams.get("scope") === "fixed" ? "fixed" : "all";
+  const requestedScope = url.searchParams.get("scope");
+  const scope =
+    requestedScope === "fixed" ||
+    requestedScope === "cdi" ||
+    requestedScope === "extras" ||
+    requestedScope === "market"
+      ? requestedScope
+      : "all";
   const data = await getData(start, end, token, scope);
   return Response.json(data, {
     headers: {

@@ -113,3 +113,25 @@ it("consulta renda fixa sem aguardar nem chamar a brapi", async () => {
   expect(body.selic).toBeDefined();
   expect(body.savings).toBeDefined();
 });
+
+it("isola as fontes para não bloquear o CDI com outras consultas", async () => {
+  const calls: string[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string) => {
+      calls.push(url);
+      return Response.json([]);
+    }),
+  );
+  await getData("2026-09-14", "2026-10-14", undefined, "cdi");
+  expect(calls).toHaveLength(2);
+  expect(
+    calls.every((url) => url.includes("sgs.12/") || url.includes("4389")),
+  ).toBe(true);
+  calls.length = 0;
+  await getData("2026-09-14", "2026-10-14", undefined, "extras");
+  expect(calls).toHaveLength(2);
+  expect(
+    calls.every((url) => url.includes("sgs.11/") || url.includes("sgs.195/")),
+  ).toBe(true);
+});
