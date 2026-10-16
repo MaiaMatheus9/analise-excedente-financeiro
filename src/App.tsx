@@ -1,5 +1,4 @@
 import { CapitalInput } from "./components/CapitalInput";
-import { validRange } from "./lib/dateRange";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeftRight,
@@ -94,9 +93,6 @@ export default function App() {
     [period, setPeriod] = useState("1m"),
     [end, setEnd] = useState(shiftDays(today(), -1)),
     [start, setStart] = useState(monthsAgo(shiftDays(today(), -1), 1)),
-    [draftStart, setDraftStart] = useState(start),
-    [draftEnd, setDraftEnd] = useState(end),
-    [dateError, setDateError] = useState(""),
     [refresh, setRefresh] = useState(0),
     [category, setCategory] = useState("Todas"),
     [sort, setSort] = useState("desc"),
@@ -161,7 +157,6 @@ export default function App() {
       );
   function preset(key: string) {
     setPeriod(key);
-    if (key === "custom") return;
     const to = [
         shiftDays(today(), -1),
         ...(data?.cdi.date ? [data.cdi.date] : []),
@@ -171,20 +166,6 @@ export default function App() {
         : shiftDays(to, -Number(key));
     setStart(from);
     setEnd(to);
-    setDraftStart(from);
-    setDraftEnd(to);
-    setDateError("");
-  }
-  function applyDates() {
-    if (!validRange(draftStart, draftEnd, today())) {
-      setDateError(
-        "Escolha datas em ordem, até hoje, em um intervalo de até dez anos.",
-      );
-      return;
-    }
-    setStart(draftStart);
-    setEnd(draftEnd);
-    setDateError("");
   }
   const navigate = (id: string) => {
     setTab(id);
@@ -425,7 +406,6 @@ export default function App() {
                   ["24m", "2 anos"],
                   ["60m", "5 anos"],
                   ["120m", "10 anos"],
-                  ["custom", "Personalizado"],
                 ].map(([key, label]) => (
                   <button
                     key={key}
@@ -456,38 +436,6 @@ export default function App() {
                 ))}
               </select>
             </label>
-            {period === "custom" && (
-              <div className="custom-dates">
-                <label>
-                  Data inicial
-                  <input
-                    type="date"
-                    value={draftStart}
-                    max={today()}
-                    onChange={(e) => setDraftStart(e.target.value)}
-                    onInput={(e) => setDraftStart(e.currentTarget.value)}
-                  />
-                </label>
-                <label>
-                  Data final
-                  <input
-                    type="date"
-                    value={draftEnd}
-                    max={today()}
-                    onChange={(e) => setDraftEnd(e.target.value)}
-                    onInput={(e) => setDraftEnd(e.currentTarget.value)}
-                  />
-                </label>
-                <button className="button" onClick={applyDates}>
-                  Aplicar período
-                </button>
-                {dateError && (
-                  <span role="alert" className="negative">
-                    {dateError}
-                  </span>
-                )}
-              </div>
-            )}
           </section>
           <div className="data-status" aria-live="polite">
             <span>

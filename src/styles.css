@@ -987,15 +987,6 @@ main {
 .filters label {
   font-size: 11px;
 }
-.custom-dates {
-  display: flex;
-  align-items: end;
-  gap: 14px;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--border-e9ede5);
-  padding-top: 15px;
-  width: 100%;
-}
 .data-status {
   display: flex;
   justify-content: space-between;
@@ -1933,13 +1924,6 @@ footer > span {
   }
   .span-two {
     grid-column: auto;
-  }
-  .custom-dates label {
-    width: calc(50% - 8px);
-  }
-  .custom-dates input {
-    width: 100%;
-    font-size: 11px;
   }
   .table-toolbar {
     padding: 8px 15px 15px;
