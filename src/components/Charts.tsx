@@ -75,7 +75,7 @@ export function ReturnChart({
             width={metric === "final" ? 72 : 52}
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
+            tick={{ fill: "var(--chart-axis)", fontSize: 12 }}
             tickFormatter={(v) =>
               metric === "rate"
                 ? `${Number(v).toLocaleString("pt-BR")}%`
@@ -162,13 +162,13 @@ export function HistoryChart({ rows }: { rows: ComparisonRow[] }) {
             minTickGap={35}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
+            tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
           />
           <YAxis
             tickFormatter={(v) => `${v}%`}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "var(--chart-axis)" }}
+            tick={{ fontSize: 12, fill: "var(--chart-axis)" }}
           />
           <Tooltip
             labelFormatter={(v) => dateLabel(String(v))}

@@ -175,189 +175,189 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --background-122b23a6: #0e1513a6;
-  --background-17342e88: #0e151488;
-  --background-193d33: #0e1613;
-  --background-264f3e: #0f1512;
-  --background-274e40: #0f1513;
-  --background-35664e: #0f1512;
-  --background-365a43: #101411;
-  --background-3f694c: #101411;
-  --background-477d68: #0f1412;
-  --background-6e9b78: #101411;
-  --background-76966e: #111310;
-  --background-90b58b: #101410;
-  --background-9fc5e8: #0c1218;
-  --background-ad6459: #15100f;
-  --background-aec99d: #11150f;
-  --background-b6d7a8: #11150e;
-  --background-bed1af: #12140f;
-  --background-c29d58: #16130e;
-  --background-c3d0bc: #111310;
-  --background-c5debb: #11150f;
-  --background-dcebcf: #12160e;
-  --background-ddebf5: #0d1317;
-  --background-e1e7dc: #121410;
-  --background-e1ecda: #11150f;
-  --background-e3eed9: #12150e;
-  --background-e6eedf: #12150f;
-  --background-e7ece1: #121410;
-  --background-e7efdf: #12150f;
-  --background-eaece5: #121310;
-  --background-eaf2fa: #0c1218;
-  --background-edf2e8: #12140f;
-  --background-edf3e9: #11150f;
-  --background-edf4e6: #12150e;
-  --background-eef2e9: #12140f;
-  --background-eef2e7: #13150f;
-  --background-f0f2ed: #121310;
-  --background-f0f6fb: #0c1217;
-  --background-f1f3ed: #131410;
-  --background-f1f6ec: #12150e;
-  --background-f1f6fc: #0c1118;
-  --background-f5f6f1: #131410;
-  --background-f5f8f2: #12150f;
-  --background-f6f7f3: #131410;
-  --background-f6f7f4: #121310;
-  --background-fafbf7: #13150f;
-  --background-fafcf6: #13160d;
-  --background-fcf0eb: #190f0b;
-  --background-fcfdfb: #12150f;
-  --background-fff: #121212;
-  --border-264f3e: #364f45;
-  --border-39594b: #3d4e46;
-  --border-558465: #435549;
-  --border-587769: #45514b;
-  --border-6c9e84: #475950;
-  --border-abc29a: #56634c;
-  --border-b6d7a8: #536d48;
-  --border-c9d7c0: #5a6851;
-  --border-cbdcc4: #586b50;
-  --border-cfdfc5: #5a6d4f;
-  --border-d3dfcc: #5b6a53;
-  --border-d4e0c9: #5e6c50;
-  --border-d6e2ed: #4c6275;
-  --border-d7e0d0: #5e6a54;
-  --border-d9e2d1: #5f6b53;
-  --border-d9e5ef: #4b6377;
-  --border-dae5d3: #5d6d52;
-  --border-dbe7d2: #5d7050;
-  --border-dce3da: #5c6759;
-  --border-dce4dc: #5a675a;
-  --border-dce5d7: #5d6b55;
-  --border-dde5d6: #5f6c54;
-  --border-dfe5d9: #606a56;
-  --border-dfe5db: #5f6958;
-  --border-e0e6dd: #5e6959;
-  --border-e1e6d9: #636b55;
-  --border-e1e6dc: #616958;
-  --border-e2e7df: #5f6959;
-  --border-e5e9e3: #5f685b;
-  --border-e8ece3: #636c57;
-  --border-e8ece4: #626b58;
-  --border-e9ede5: #626c58;
-  --border-edd3c8: #7a5545;
-  --border-edf0e8: #656e57;
-  --border-eef0e8: #686e57;
-  --border-f0f2ec: #676d59;
-  --text-214436: #a9c8bc;
-  --text-243c32: #adc3ba;
-  --text-244735: #abc8b9;
-  --text-294234: #afc4b8;
-  --text-294d3c: #adc8bb;
-  --text-304b38: #b1c4b7;
-  --text-355545: #b3c6bd;
-  --text-365b32: #b3c9b1;
-  --text-3f5638: #b8c6b4;
-  --text-416986: #b6c5d1;
-  --text-4b6740: #bcc9b6;
-  --text-4b6840: #bcc9b6;
-  --text-4f715a: #bcc9c0;
-  --text-4f7c57: #bbccbe;
-  --text-507344: #bdccb7;
-  --text-526456: #bec5bf;
-  --text-526459: #bec5c1;
-  --text-52675a: #bdc6c1;
-  --text-547e63: #bdccc2;
-  --text-58774b: #bfcbba;
-  --text-61715a: #c2c8bf;
-  --text-617166: #c2c7c3;
-  --text-62805a: #c2ccbf;
-  --text-657660: #c3c9c1;
-  --text-667461: #c3c8c2;
-  --text-67806c: #c3cbc4;
-  --text-697859: #c5cabf;
-  --text-6c8aa4: #c4ccd3;
-  --text-6d8ba2: #c4ccd3;
-  --text-718675: #c6ccc7;
-  --text-728267: #c6cbc3;
-  --text-728268: #c6cbc3;
-  --text-73816a: #c6cbc4;
-  --text-75846f: #c7cbc5;
-  --text-76896b: #c7cdc4;
-  --text-7791a6: #c6cdd3;
-  --text-79896f: #c8ccc5;
-  --text-7b8576: #c8cbc7;
-  --text-7b877e: #c8cbc9;
-  --text-7c8872: #c9ccc6;
-  --text-7c8973: #c9ccc6;
-  --text-7c8974: #c9ccc6;
-  --text-7c8a73: #c9ccc6;
-  --text-7c8b72: #c9cdc6;
-  --text-819076: #cacec7;
-  --text-819477: #cacfc7;
-  --text-83907a: #cacec8;
-  --text-839477: #cacfc7;
-  --text-849078: #cacec7;
-  --text-84937c: #cacec8;
-  --text-84947d: #cacfc8;
-  --text-85917b: #cbcec8;
-  --text-879080: #cbcec9;
-  --text-87937d: #cbcec8;
-  --text-889184: #cbceca;
-  --text-889280: #cbcec9;
-  --text-89a799: #cad3cf;
-  --text-8a9284: #ccceca;
-  --text-8a9581: #cccfc9;
-  --text-8b9386: #ccceca;
-  --text-8b9584: #cccfca;
-  --text-8b968e: #cccfcc;
-  --text-8c9685: #cccfca;
-  --text-8d9c82: #ccd1c9;
-  --text-909887: #cdcfcb;
-  --text-939889: #cecfcb;
-  --text-939b89: #ced0cb;
-  --text-93ad9e: #cdd5d0;
-  --text-95afa0: #cdd5d0;
-  --text-96a08c: #ced1cb;
-  --text-975b4d: #d2bfbb;
-  --text-a08054: #d3cabd;
-  --text-a2aa98: #d1d4ce;
-  --text-a5bbae: #d0d8d3;
-  --text-b16b60: #d7c3c0;
-  --text-b3c1b5: #d4d9d4;
-  --text-b3c6bb: #d3dbd6;
-  --text-b4c9bd: #d3dbd7;
-  --text-b6d7a8: #d4e1ce;
-  --text-c1d9b6: #d6e1d2;
-  --text-c5deb9: #d7e3d2;
-  --text-c6dbb6: #d8e2d1;
-  --text-d8e4dc: #dae2dd;
-  --text-dbe6dd: #dbe3dc;
-  --text-e6eee8: #dde5df;
-  --text-f5faf5: #deeade;
-  --text-fff: #e6e6e6;
-  --chart-grid: #46534d;
-  --chart-axis: #c1ccc4;
-  --chart-cursor: #2a3831;
-  --chart-tooltip-bg: #202c26;
-  --chart-positive: #77b18b;
-  --chart-negative: #d28b7e;
-  --chart-reference: #83add1;
-  --chart-series-1: #77b18b;
-  --chart-series-2: #83add1;
-  --chart-series-3: #d1a970;
-  --chart-series-4: #aa96c2;
+  --background-122b23a6: #1c2522;
+  --background-17342e88: #1c2522;
+  --background-193d33: #101a15;
+  --background-264f3e: #21c768;
+  --background-274e40: #1c2522;
+  --background-35664e: #43db83;
+  --background-365a43: #1c2522;
+  --background-3f694c: #1c2522;
+  --background-477d68: #21c768;
+  --background-6e9b78: #21c768;
+  --background-76966e: #35a86a;
+  --background-90b58b: #67da92;
+  --background-9fc5e8: #79b9ed;
+  --background-ad6459: #ed8d86;
+  --background-aec99d: #1b5134;
+  --background-b6d7a8: #21c768;
+  --background-bed1af: #1c2522;
+  --background-c29d58: #1c2522;
+  --background-c3d0bc: #1c2522;
+  --background-c5debb: #21c768;
+  --background-dcebcf: #1c2522;
+  --background-ddebf5: #1c2522;
+  --background-e1e7dc: #1c2522;
+  --background-e1ecda: #1c2522;
+  --background-e3eed9: #21c768;
+  --background-e6eedf: #1c2522;
+  --background-e7ece1: #1c2522;
+  --background-e7efdf: #1c2522;
+  --background-eaece5: #1c2522;
+  --background-eaf2fa: #152832;
+  --background-edf2e8: #1c2522;
+  --background-edf3e9: #1c2522;
+  --background-edf4e6: #1c2522;
+  --background-eef2e9: #1c2522;
+  --background-eef2e7: #1c2522;
+  --background-f0f2ed: #1c2522;
+  --background-f0f6fb: #172b32;
+  --background-f1f3ed: #1c2522;
+  --background-f1f6ec: #1c2522;
+  --background-f1f6fc: #172b32;
+  --background-f5f6f1: #1c2522;
+  --background-f5f8f2: #1c2522;
+  --background-f6f7f3: #101813;
+  --background-f6f7f4: #0c1210;
+  --background-fafbf7: #19241e;
+  --background-fafcf6: #1c2522;
+  --background-fcf0eb: #34211e;
+  --background-fcfdfb: #161f1b;
+  --background-fff: #161f1b;
+  --border-264f3e: #21c768;
+  --border-39594b: #303e38;
+  --border-558465: #303e38;
+  --border-587769: #303e38;
+  --border-6c9e84: #34d47e;
+  --border-abc29a: #303e38;
+  --border-b6d7a8: #303e38;
+  --border-c9d7c0: #303e38;
+  --border-cbdcc4: #303e38;
+  --border-cfdfc5: #303e38;
+  --border-d3dfcc: #303e38;
+  --border-d4e0c9: #303e38;
+  --border-d6e2ed: #315162;
+  --border-d7e0d0: #303e38;
+  --border-d9e2d1: #303e38;
+  --border-d9e5ef: #315162;
+  --border-dae5d3: #303e38;
+  --border-dbe7d2: #303e38;
+  --border-dce3da: #303e38;
+  --border-dce4dc: #303e38;
+  --border-dce5d7: #303e38;
+  --border-dde5d6: #303e38;
+  --border-dfe5d9: #303e38;
+  --border-dfe5db: #303e38;
+  --border-e0e6dd: #303e38;
+  --border-e1e6d9: #303e38;
+  --border-e1e6dc: #303e38;
+  --border-e2e7df: #303e38;
+  --border-e5e9e3: #303e38;
+  --border-e8ece3: #303e38;
+  --border-e8ece4: #303e38;
+  --border-e9ede5: #303e38;
+  --border-edd3c8: #684038;
+  --border-edf0e8: #303e38;
+  --border-eef0e8: #303e38;
+  --border-f0f2ec: #303e38;
+  --text-214436: #edf6f0;
+  --text-243c32: #edf6f0;
+  --text-244735: #edf6f0;
+  --text-294234: #edf6f0;
+  --text-294d3c: #edf6f0;
+  --text-304b38: #edf6f0;
+  --text-355545: #edf6f0;
+  --text-365b32: #a8b9b0;
+  --text-3f5638: #edf6f0;
+  --text-416986: #a3cff2;
+  --text-4b6740: #a8b9b0;
+  --text-4b6840: #a8b9b0;
+  --text-4f715a: #a8b9b0;
+  --text-4f7c57: #4cde8b;
+  --text-507344: #a8b9b0;
+  --text-526456: #a8b9b0;
+  --text-526459: #a8b9b0;
+  --text-52675a: #a8b9b0;
+  --text-547e63: #4cde8b;
+  --text-58774b: #4cde8b;
+  --text-61715a: #a8b9b0;
+  --text-617166: #a8b9b0;
+  --text-62805a: #a8b9b0;
+  --text-657660: #a8b9b0;
+  --text-667461: #a8b9b0;
+  --text-67806c: #a8b9b0;
+  --text-697859: #a8b9b0;
+  --text-6c8aa4: #a3cff2;
+  --text-6d8ba2: #a3cff2;
+  --text-718675: #a8b9b0;
+  --text-728267: #a8b9b0;
+  --text-728268: #a8b9b0;
+  --text-73816a: #a8b9b0;
+  --text-75846f: #a8b9b0;
+  --text-76896b: #a8b9b0;
+  --text-7791a6: #a3cff2;
+  --text-79896f: #a8b9b0;
+  --text-7b8576: #a8b9b0;
+  --text-7b877e: #a8b9b0;
+  --text-7c8872: #a8b9b0;
+  --text-7c8973: #a8b9b0;
+  --text-7c8974: #a8b9b0;
+  --text-7c8a73: #a8b9b0;
+  --text-7c8b72: #a8b9b0;
+  --text-819076: #a8b9b0;
+  --text-819477: #a8b9b0;
+  --text-83907a: #a8b9b0;
+  --text-839477: #a8b9b0;
+  --text-849078: #a8b9b0;
+  --text-84937c: #a8b9b0;
+  --text-84947d: #a8b9b0;
+  --text-85917b: #a8b9b0;
+  --text-879080: #a8b9b0;
+  --text-87937d: #a8b9b0;
+  --text-889184: #a8b9b0;
+  --text-889280: #a8b9b0;
+  --text-89a799: #a8b9b0;
+  --text-8a9284: #a8b9b0;
+  --text-8a9581: #a8b9b0;
+  --text-8b9386: #a8b9b0;
+  --text-8b9584: #a8b9b0;
+  --text-8b968e: #a8b9b0;
+  --text-8c9685: #a8b9b0;
+  --text-8d9c82: #a8b9b0;
+  --text-909887: #a8b9b0;
+  --text-939889: #a8b9b0;
+  --text-939b89: #a8b9b0;
+  --text-93ad9e: #a8b9b0;
+  --text-95afa0: #a8b9b0;
+  --text-96a08c: #a8b9b0;
+  --text-975b4d: #f1a098;
+  --text-a08054: #e8c581;
+  --text-a2aa98: #a8b9b0;
+  --text-a5bbae: #a8b9b0;
+  --text-b16b60: #f1a098;
+  --text-b3c1b5: #a8b9b0;
+  --text-b3c6bb: #a8b9b0;
+  --text-b4c9bd: #a8b9b0;
+  --text-b6d7a8: #4cde8b;
+  --text-c1d9b6: #4cde8b;
+  --text-c5deb9: #4cde8b;
+  --text-c6dbb6: #a8b9b0;
+  --text-d8e4dc: #a8b9b0;
+  --text-dbe6dd: #a8b9b0;
+  --text-e6eee8: #a8b9b0;
+  --text-f5faf5: #a8b9b0;
+  --text-fff: #f2f8f4;
+  --chart-grid: #2d3b33;
+  --chart-axis: #b5c5bc;
+  --chart-cursor: #22392b;
+  --chart-tooltip-bg: #1a2920;
+  --chart-positive: #27cf75;
+  --chart-negative: #ee8c84;
+  --chart-reference: #79b9ed;
+  --chart-series-1: #27cf75;
+  --chart-series-2: #79b9ed;
+  --chart-series-3: #eac778;
+  --chart-series-4: #b6a0ee;
 }
 
 :root[data-theme="light"] {
@@ -388,7 +388,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 5px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-73816a);
   line-height: 1.7;
   margin: 0 0 20px;
@@ -992,7 +992,7 @@ main {
   justify-content: space-between;
   gap: 10px;
   color: var(--text-889184);
-  font-size: 10px;
+  font-size: 12px;
   margin: 13px 2px 22px;
 }
 .data-status > span:first-child {
@@ -1059,7 +1059,7 @@ main {
   color: var(--text-84937c);
 }
 .kpi > div span {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.2px;
   font-weight: 600;
 }
@@ -1072,7 +1072,7 @@ main {
   color: var(--text-304b38);
 }
 .kpi small {
-  font-size: 9px;
+  font-size: 12px;
   color: var(--text-879080);
   display: block;
   line-height: 1.5;
@@ -1098,7 +1098,7 @@ main {
   margin: 29px 0 17px;
 }
 .section-heading .eyebrow {
-  font-size: 8px;
+  font-size: 10px;
   margin: 0 0 8px;
 }
 .section-heading h2 {
@@ -1131,7 +1131,7 @@ main {
   letter-spacing: -0.15px;
 }
 .panel-heading p {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-8a9284);
   margin: 0;
 }
@@ -1148,7 +1148,7 @@ main {
   gap: 20px;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--text-8b9386);
   border-top: 1px solid var(--border-f0f2ec);
   padding-top: 14px;
@@ -1193,7 +1193,7 @@ main {
   color: var(--text-4b6840);
 }
 .insight p {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-7c8b72);
   margin: 6px 0 0;
   line-height: 1.7;
@@ -1222,7 +1222,7 @@ table {
   white-space: nowrap;
 }
 th {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--text-849078);
   font-weight: 500;
   padding: 14px 20px;
@@ -1242,7 +1242,7 @@ td strong {
 }
 td small {
   display: block;
-  font-size: 9px;
+  font-size: 12px;
   margin-top: 5px;
   white-space: normal;
   max-width: 240px;
@@ -1417,7 +1417,7 @@ tr:last-child td {
   color: var(--text-87937d);
 }
 .form-note {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-819076);
   margin: 18px 0 0;
 }
@@ -1643,7 +1643,7 @@ footer > span {
     font-size: 23px;
   }
   .kpi small {
-    font-size: 9px;
+    font-size: 12px;
   }
   .banner-art {
     right: 4%;
@@ -1834,7 +1834,7 @@ footer > span {
     font-size: 10px;
   }
   .data-status {
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.5;
     margin-bottom: 17px;
   }
@@ -1851,7 +1851,7 @@ footer > span {
     padding: 15px 12px;
   }
   .kpi > div span {
-    font-size: 7px;
+    font-size: 10px;
     letter-spacing: 0.7px;
   }
   .kpi > div svg {
@@ -1862,7 +1862,7 @@ footer > span {
     margin: 16px 0 9px;
   }
   .kpi small {
-    font-size: 8px;
+    font-size: 12px;
   }
   .section-heading {
     gap: 15px;
@@ -1881,7 +1881,7 @@ footer > span {
     font-size: 14px;
   }
   .panel-heading p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .table-panel {
     padding: 0;
@@ -1900,7 +1900,7 @@ footer > span {
     font-size: 11px;
   }
   .insight p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .insight-icon {
     width: 30px;
@@ -1997,3 +1997,29 @@ footer > span {
 .fixed-kpis { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 
 .comparison-details-title { cursor: pointer; font-weight: 600; }
+
+/* Dark theme: emerald accents on layered graphite surfaces. */
+:root[data-theme="dark"] .intro-banner {
+  background: radial-gradient(ellipse at 90% 20%, #195c3866, transparent 60%), linear-gradient(120deg, #152c20, #102019);
+  border-color: #2a5139;
+}
+:root[data-theme="dark"] .sidebar nav button.active,
+:root[data-theme="dark"] .period-buttons button.active,
+:root[data-theme="dark"] .segmented button.active,
+:root[data-theme="dark"] .button:not(.secondary) {
+  color: #062311;
+  background: #21c768;
+  border-color: #21c768;
+}
+:root[data-theme="dark"] .button:not(.secondary):hover {
+  background: #43db83;
+}
+:root[data-theme="dark"] .brand-icon {
+  background: #21c768;
+  color: #062311;
+}
+:root[data-theme="dark"] .art-bars i { background: #27cf75; }
+:root[data-theme="dark"] .art-card { background: #173d29; border-color: #3b7751; }
+:root[data-theme="dark"] .art-coin { background: #21c768; color: #062311; }
+:root[data-theme="dark"] .kpi,
+:root[data-theme="dark"] .panel { box-shadow: 0 8px 24px #00000014; }
